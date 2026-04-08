@@ -15,12 +15,6 @@ fd
 hammerspoon
 gron
 csview
-#pyenv
-#pipx
-#poetry
-#python
-##rye
-##uv
 ##ruby
 ##java
 ssh
