@@ -10,12 +10,10 @@ zsh
 tmux
 ghostty
 zoxide
-##go
 ##memo
 ##memo-setup
 ##vim
 nvim
-##goneovim
 jq
 fd
 hammerspoon
