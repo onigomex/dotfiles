@@ -10,7 +10,6 @@ zsh
 tmux
 ghostty
 zoxide
-##vim
 nvim
 jq
 fd
