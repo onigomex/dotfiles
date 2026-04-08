@@ -23,7 +23,6 @@ hammerspoon
 #direnv
 ##devbox
 ##mise
-##terraform
 ##kubernetes
 gron
 csview
