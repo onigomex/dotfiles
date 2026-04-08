@@ -18,7 +18,6 @@ csview
 #github-actions
 ##delta
 ##ffmpeg
-##imagemagick
 ##node
 #pyenv
 #pipx
