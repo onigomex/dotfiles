@@ -32,7 +32,7 @@ curl -fsSL https://raw.githubusercontent.com/onigomex/dotfiles/$DOTF_BRANCH/inst
 
 ### Specify a role file
 ```
-export DOTF_ROLES_FILE=roles.work.lst
+export DOTF_ROLES_FILE=roles.dev.lst
 curl -fsSL https://raw.githubusercontent.com/onigomex/dotfiles/HEAD/install | zsh
 ```
 
