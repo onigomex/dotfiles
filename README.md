@@ -2,15 +2,16 @@
 My dotfiles
 
 
-
 ## Setup
-### sudo password
+### sudo
 ```
-sudo sh -c "echo $(whoami) ALL=\(ALL\) NOPASSWD:ALL > /private/etc/sudoers.d/$(whoami)"
+echo "$(whoami) ALL=(ALL) NOPASSWD: ALL" | sudo tee /private/etc/sudoers.d/$(whoami)
+sudo chmod 0440 /private/etc/sudoers.d/$(whoami)
+sudo visudo -c
+
 # Delete it if it is not necessary after the installation is completed.
 sudo rm -f /private/etc/sudoers.d/$(whoami)
 ```
-
 
 ### Xcode
 ```
@@ -18,29 +19,24 @@ xcode-select --install
 ```
 
 
-
-## Configuration
-You can override the configuration values for particular role by setting them before installation.
-
-### roles/git
-```
-export GIT_USERNAME=foo
-export GIT_EMAIL=bar@baz.com
-```
-
-
-
 ## Installation
 ```
 curl -fsSL https://raw.githubusercontent.com/onigomex/dotfiles/HEAD/install | zsh
 ```
 
+### Specify a branch
+```
+export DOTF_BRANCH=example
+curl -fsSL https://raw.githubusercontent.com/onigomex/dotfiles/$DOTF_BRANCH/install | zsh
+```
 
-### Another way
+### Specify a role file
 ```
 export DOTF_ROLES_FILE=roles.work.lst
 curl -fsSL https://raw.githubusercontent.com/onigomex/dotfiles/HEAD/install | zsh
 ```
+
+### Create a role file and specify it
 ```
 export DOTF_ROLES_FILE=`pwd`/roles.txt
 cat << EOF > $DOTF_ROLES_FILE
@@ -49,12 +45,6 @@ git
 tig
 EOF
 curl -fsSL https://raw.githubusercontent.com/onigomex/dotfiles/HEAD/install | zsh
-```
-```
-git clone https://github.com/onigomex/dotfiles.git
-cd dotfiles
-make install
-make install ROLE=vim
 ```
 
 #### $DOTF_ROLES_FILE
@@ -68,6 +58,13 @@ git
 tig
 ```
 
+### Clone the repository locally and install per role
+```
+git clone https://github.com/onigomex/dotfiles.git
+cd dotfiles
+make install
+make install ROLE=vim
+```
 
 
 ## Development

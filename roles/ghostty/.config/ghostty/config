@@ -1,0 +1,18 @@
+theme = Nordfox
+
+# Nerd Fontを使用（アイコン表示に対応）
+#font-family = "JetBrains Mono"
+#font-size = 12
+
+## クイックターミナルの設定
+quick-terminal-position = top
+quick-terminal-screen = main
+quick-terminal-animation-duration = 0.2
+quick-terminal-autohide = true
+
+## グローバルキーバインド
+keybind = global:cmd+shift+comma=toggle_quick_terminal
+
+## 設定リロード
+keybind = cmd+shift+period=reload_config
+
