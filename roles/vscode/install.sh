@@ -9,7 +9,7 @@ brew list --cask visual-studio-code > /dev/null 2>&1 || {
 }
 
 (
-code
 cd ${CURRENT_PATH}
+mkdir -p "${HOME}/Library/Application Support/Code/User/"
 cp -fr config/* "${HOME}/Library/Application Support/Code/User/"
 )
