@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:docs.claude.com)",
+      "WebFetch(domain:nakamasato.medium.com)",
+      "WebFetch(domain:khromov.se)",
+      "WebFetch(domain:susomejias.dev)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Bash(gh api *)",
+      "WebFetch(domain:tech.every.tv)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/USER_NAME/src/github.com/onigomex/dotfiles/.claude/scripts/notify.sh '応答が完了しました' '' claude-stop"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "permission_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/USER_NAME/src/github.com/onigomex/dotfiles/.claude/scripts/notify.sh '承認待ちです' Glass claude-permission"
+          }
+        ]
+      }
+    ]
+  }
+}

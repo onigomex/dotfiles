@@ -7,6 +7,8 @@ Claude Code is an AI-powered coding assistant that helps you build features, fix
 
 ## Dependencies
 - homebrew
+- alerter
+  - terminal から claude code の作業完了・入力待ち通知をする際に使用している。
 
 
 
