@@ -1,0 +1,27 @@
+{
+  "model": "claude-opus-4-7",
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "osascript -e 'tell application \"System Events\" to set f to name of first application process whose frontmost is true' -e 'if f is not \"ghostty\" then display notification \"応答が完了しました\" with title \"Claude Code\"'"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "permission_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "osascript -e 'tell application \"System Events\" to set f to name of first application process whose frontmost is true' -e 'if f is not \"ghostty\" then display notification \"承認待ちです\" with title \"Claude Code\" sound name \"Glass\"'"
+          }
+        ]
+      }
+    ]
+  }
+}
