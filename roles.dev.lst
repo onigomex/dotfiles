@@ -1,7 +1,6 @@
 docker
 colima
 devbox
-alerter
 claude
 vscode
 github-actions
