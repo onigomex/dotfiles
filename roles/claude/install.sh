@@ -8,3 +8,8 @@ brew list --cask claude-code > /dev/null 2>&1 || {
   brew install claude-code --cask
 }
 
+(
+cd ${CURRENT_PATH}
+cp -fr .claude ${HOME}/
+)
+
