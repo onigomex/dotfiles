@@ -15,10 +15,14 @@ cat << 'EOF'
 - k: kubectl
 - repo: src 直下を fzf し、選択したら cd
 - zi: 高アクセス頻度dir を fzf し、選択したら cd
+- z <ディレクトリ断片>: z 移動したいディレクトリの断片（e.g., z D => cd ~/Download）
 - aws-nuke: aws nuke
 - gci-rebase: rebase 用の git commit id（選んだ一つ前）を出力する
 - ssh-add-keys: ~/.ssh/*.pem ファイルを ssh-add する
 - tmux-resize-pane: tmux の pane サイズを変更する
+- claude -c: --continue の略、直近の会話の継続する
+- claude -r: --resume の略、特定のセッションを再開する
+- claude -w [name]: --worktree の略、.claude/worktrees/<name> に隔離された Git Worktree で起動する
 EOF
 }
 

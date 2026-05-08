@@ -29,3 +29,9 @@ Temporary Items
 
 # dotfiles
 TODO.txt
+
+# Claude
+.claude/**/*.bak*
+.claude/.credentials*
+.claude/settings.local.json
+

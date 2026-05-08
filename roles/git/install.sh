@@ -4,9 +4,23 @@ set -e
 readonly CURRENT_PATH=$(cd $(dirname $0); pwd)
 
 GIT_CONFIG_ROOT_DIR="$HOME/.config/git"
+GIT_DEFAULT_BRANCH_NAME="${GIT_DEFAULT_BRANCH_NAME:-main}"
+
+# GIT_USERNAME / GIT_EMAIL が明示的に指定されていれば $HOME/.zsh.d/git.zshrc.env
+# に export を書き出して永続化する。次回以降は env を渡さなくても、ログインシェル
+# 起動時に source されることで同じ値が再利用される。
+# scripts/install.sh が source ~/.zsh.d/.zshrc でこの env をロードする際、ユーザー
+# が事前に export した値を上書きしないよう、${VAR:-fallback} 形式で書き出す。
+if [[ -n "${GIT_USERNAME}" && -n "${GIT_EMAIL}" ]]; then
+  mkdir -p "${HOME}/.zsh.d"
+  cat > "${HOME}/.zsh.d/git.zshrc.env" <<EOF
+export GIT_USERNAME="\${GIT_USERNAME:-${GIT_USERNAME}}"
+export GIT_EMAIL="\${GIT_EMAIL:-${GIT_EMAIL}}"
+EOF
+fi
+
 GIT_USERNAME="${GIT_USERNAME:-foo}"
 GIT_EMAIL="${GIT_EMAIL:-bar@baz.com}"
-GIT_DEFAULT_BRANCH_NAME="${GIT_DEFAULT_BRANCH_NAME:-main}"
 
 
 brew list git > /dev/null 2>&1 || {
