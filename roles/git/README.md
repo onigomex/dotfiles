@@ -19,6 +19,14 @@ Git is a free and open source distributed version control system.
 ```
 
 
+### Example
+```
+export GIT_USERNAME=onigomex
+export GIT_EMAIL=onigomex+github@gmail.com
+make install ROLE=git
+```
+
+
 
 ## git config --global settings
 

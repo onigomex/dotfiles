@@ -34,6 +34,12 @@ curl -fsSL https://raw.githubusercontent.com/onigomex/dotfiles/$DOTF_BRANCH/inst
 ```
 export DOTF_ROLES_FILE=roles.dev.lst
 curl -fsSL https://raw.githubusercontent.com/onigomex/dotfiles/HEAD/install | zsh
+
+# Reuse an existing role file
+curl -s \
+  https://raw.githubusercontent.com/onigomex/dotfiles/refs/heads/main/roles.dev.lst \
+  https://raw.githubusercontent.com/onigomex/dotfiles/refs/heads/main/roles.etc.lst \
+  --output - > roles.lst
 ```
 
 ### Create a role file and specify it
