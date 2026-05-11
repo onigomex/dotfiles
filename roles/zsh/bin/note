@@ -1,0 +1,123 @@
+#!/usr/bin/env zsh
+
+# note - simple single-file note taker.
+#
+# Storage layout (XDG_CONFIG_HOME defaults to ~/.config):
+#   $XDG_CONFIG_HOME/note/NOTE.md            ... current note
+#   $XDG_CONFIG_HOME/note/archives/*.md      ... archived notes
+
+set -eu
+
+NOTE_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/note"
+NOTE_FILE="$NOTE_DIR/NOTE.md"
+ARCHIVE_DIR="$NOTE_DIR/archives"
+
+usage() {
+  cat <<EOF
+Usage: note [command]
+
+A simple note-taking command.
+
+Commands:
+  (none)        Open \$XDG_CONFIG_HOME/note/NOTE.md in vim (creates if missing).
+  new           Archive current NOTE.md, then open a fresh NOTE.md.
+                Archive path: \$XDG_CONFIG_HOME/note/archives/NOTE.YYYYMMDD-HHMMSS.md
+  list          List archived notes via fzf (with preview) and open the chosen one.
+  browse        Open the archives directory in Finder (macOS 'open').
+  --help, -h    Show this help.
+EOF
+}
+
+cmd_open() {
+  mkdir -p "$NOTE_DIR"
+  vim "$NOTE_FILE"
+}
+
+cmd_new() {
+  mkdir -p "$NOTE_DIR" "$ARCHIVE_DIR"
+  if [[ -f "$NOTE_FILE" ]]; then
+    local ts
+    ts="$(date +%Y%m%d-%H%M%S)"
+    mv "$NOTE_FILE" "$ARCHIVE_DIR/NOTE.${ts}.md"
+  fi
+  vim "$NOTE_FILE"
+}
+
+cmd_list() {
+  if ! command -v fzf >/dev/null 2>&1; then
+    print -u2 "note: 'fzf' is required for 'note list' but was not found in PATH."
+    return 1
+  fi
+
+  if [[ ! -d "$ARCHIVE_DIR" ]]; then
+    print "No archives."
+    return 0
+  fi
+
+  # Only target NOTE.YYYYMMDD-HHMMSS.md (8 digits + '-' + 6 digits).
+  # Sort by filename descending (On). N = nullglob, . = regular file.
+  local -a files
+  files=("$ARCHIVE_DIR"/NOTE.<->-<->.md(N.On))
+  if (( ${#files} == 0 )); then
+    print "No archives."
+    return 0
+  fi
+
+  # Note: do NOT declare local vars inside the $(...) below.
+  # Inside a command-substitution subshell, zsh treats `local` as a typeset
+  # display (printing `name='value'` lines), which pollutes the fzf input.
+  local selected
+  selected=$(
+    for f in "${files[@]}"; do
+      first_line="$(head -n 1 "$f" 2>/dev/null)"
+      printf '%s\t%s\n' "${f:t}" "$first_line"
+    done | fzf \
+      --layout=reverse \
+      --delimiter=$'\t' \
+      --with-nth=1,2 \
+      --preview="cat ${(q)ARCHIVE_DIR}/{1}" \
+      --preview-window=right:60%:wrap
+  )
+
+  [[ -z "$selected" ]] && return 0
+
+  local fname="${selected%%$'\t'*}"
+  vim "$ARCHIVE_DIR/$fname"
+}
+
+cmd_browse() {
+  if [[ ! -d "$ARCHIVE_DIR" ]]; then
+    print "No archives."
+    return 0
+  fi
+  open "$ARCHIVE_DIR"
+}
+
+main() {
+  if (( $# == 0 )); then
+    cmd_open
+    return
+  fi
+
+  case "$1" in
+    --help|-h|help)
+      usage
+      ;;
+    new)
+      cmd_new
+      ;;
+    list)
+      cmd_list
+      ;;
+    browse)
+      cmd_browse
+      ;;
+    *)
+      print -u2 "note: unknown command: $1"
+      usage >&2
+      return 1
+      ;;
+  esac
+}
+
+main "$@"
