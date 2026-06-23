@@ -1,5 +1,5 @@
 {
-  "model": "claude-opus-4-7",
+  "model": "opus",
   "hooks": {
     "Stop": [
       {
@@ -23,5 +23,6 @@
         ]
       }
     ]
-  }
+  },
+  "theme": "dark-ansi"
 }
