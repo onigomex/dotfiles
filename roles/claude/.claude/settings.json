@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "osascript -e 'tell application \"System Events\" to set f to name of first application process whose frontmost is true' -e 'if f is not \"ghostty\" then display notification \"応答が完了しました\" with title \"Claude Code\"'"
+            "command": "sh ~/.claude/hooks/notify.sh 'DONE' 'Glass'"
           }
         ]
       }
@@ -18,7 +18,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "osascript -e 'tell application \"System Events\" to set f to name of first application process whose frontmost is true' -e 'if f is not \"ghostty\" then display notification \"承認待ちです\" with title \"Claude Code\" sound name \"Glass\"'"
+            "command": "sh ~/.claude/hooks/notify.sh 'WAIT' 'Glass'"
           }
         ]
       }
