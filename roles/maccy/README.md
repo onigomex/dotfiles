@@ -23,16 +23,16 @@ p0deje/Maccy: Lightweight clipboard manager for macOS
 
 
 ### Pins
-- `fd -e HEIC | while read line; do echo $line; convert $line -quality 80 $line.jpg; done`
+- `fd -e HEIC | while read line; do echo $line; magick $line -quality 80 $line.jpg; done`
 - `finch run -it --rm public.ecr.aws/debian/debian:stable-slim /bin/bash`
 - `git rebase -i $(gci-rebase)`
-- 
+-
   ```
   <details>
   <summary>XXX</summary>
-  
+
   XXX
-  
+
   </details>
   ```
 
