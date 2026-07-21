@@ -1,28 +1,5 @@
 {
   "model": "opus",
-  "hooks": {
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "sh ~/.claude/hooks/notify.sh 'DONE' 'Glass'"
-          }
-        ]
-      }
-    ],
-    "Notification": [
-      {
-        "matcher": "permission_prompt",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "sh ~/.claude/hooks/notify.sh 'WAIT' 'Glass'"
-          }
-        ]
-      }
-    ]
-  },
-  "theme": "dark-ansi"
+  "theme": "dark-ansi",
+  "tui": "fullscreen"
 }
