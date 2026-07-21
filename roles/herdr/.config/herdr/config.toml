@@ -1,0 +1,22 @@
+[ui.toast]
+delivery = "system"  # macOS 通知センターへ（ターミナル外でも気づける）
+
+[ui]
+show_agent_labels_on_pane_borders = true
+
+[theme]
+name = "nord"
+auto_switch = false
+
+[theme.custom]
+overlay0 = "#6b7a94"  # サイドバーのラベル文字＋未選択ペイン枠（中間トーン）
+surface_dim = "#4c566a"  # nord3: サイドバーの区切り線・枠線を可視化（行背景も薄く色付く）
+
+[keys]
+split_vertical = ["prefix+v", "prefix+percent"]  # tmux: prefix + %
+split_horizontal = ["prefix+minus", "prefix+quote"]  # 既定 + prefix+'（tmux の " は端末依存で不可のため ' を採用）
+cycle_pane_next = ["prefix+tab", "prefix+o"]  # 既定 + tmux: prefix + o（次のペイン）
+last_pane = "prefix+semicolon"  # tmux: prefix + ;（直前のペイン）
+
+[experimental]
+pane_history = false
