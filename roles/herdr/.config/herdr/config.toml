@@ -18,5 +18,17 @@ split_horizontal = ["prefix+minus", "prefix+quote"]  # 既定 + prefix+'（tmux 
 cycle_pane_next = ["prefix+tab", "prefix+o"]  # 既定 + tmux: prefix + o（次のペイン）
 last_pane = "prefix+semicolon"  # tmux: prefix + ;（直前のペイン）
 
+# --- ワークスペースをタブ感覚で操作（旧タブ操作の指づかいを流用） ---
+new_workspace      = ["prefix+shift+n", "prefix+c"]  # 既定 shift+n を残しつつ prefix+c（旧: 新規タブ）でも新規ワークスペース
+next_workspace     = "prefix+n"                      # 次のワークスペース（旧: 次のタブ）
+previous_workspace = "prefix+p"                      # 前のワークスペース（旧: 前のタブ）
+switch_workspace   = "prefix+1..9"                   # 番号ジャンプ（旧: タブ番号ジャンプ）
+
+# --- 旧タブ操作を退避（衝突回避。タブは当面 shift+c での新規のみ） ---
+new_tab      = "prefix+shift+c"  # タブが欲しいときはこちら（prefix+c は new_workspace へ明け渡し）
+next_tab     = ""                # 当面無効（必要時に割当）
+previous_tab = ""                # 当面無効
+switch_tab   = ""                # 当面無効（prefix+1..9 は switch_workspace へ）
+
 [experimental]
 pane_history = false
