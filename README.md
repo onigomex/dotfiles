@@ -91,6 +91,7 @@ make create ROLE=vim
 1. If you want to define environment variables, define it in the `roles/<ROLE>/.zsh.d/<ROLE>.zshrc.env` file.
 1. If you want to define alias, define it in the `roles/<ROLE>/.zsh.d/<ROLE>.zshrc.alias` file.
 1. If you want to define other processes, define it in the `roles/<ROLE>/.zsh.d/<ROLE>.zshrc` file.
+1. Add `<ROLE>` to the matching category list (`roles.base.lst` / `roles.dev.lst` / `roles.etc.lst`) **and** to the combined `roles.lst`. Otherwise the role is not picked up by `make install` (without `ROLE=`). Removing a role requires deleting it from these lists too.
 
 
 ### Update images
