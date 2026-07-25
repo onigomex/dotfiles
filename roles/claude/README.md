@@ -10,6 +10,11 @@ Claude Code is an AI-powered coding assistant that helps you build features, fix
 
 
 
+## 設定（~/.claude）
+このロールは Claude Code (CLI) 本体のインストールのみを行います。`~/.claude` の設定（CLAUDE.md / settings.json / skills / hooks 等）は別リポジトリ [onigomex/claude](https://github.com/onigomex/claude) で管理しており、そちらで `make update` を実行して反映します。
+
+
+
 ## Usage
 インストールが完了したら、作業するプロジェクトでターミナルを開き、`claude` コマンドで Claude Code を起動します。
 
