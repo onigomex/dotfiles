@@ -1,0 +1,167 @@
+#!/usr/bin/env zsh
+
+# todo - open the TODO for the current context (repository or global).
+#
+# Storage layout:
+#   <git repo root>/TODO.md                      ... per-repository TODO
+#   $XDG_CONFIG_HOME/todo/TODO.md                ... global TODO (todo -g)
+#
+# During the TODO -> TODO.md migration this command also recognizes the
+# legacy extension-less "TODO" file (prefers "TODO.md" when both exist).
+# New files are always created as "TODO.md". Once every repository has
+# migrated, the legacy fallback can be dropped.
+
+set -eu
+
+TODO_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/todo"
+
+usage() {
+  cat <<EOF
+Usage: todo [command]
+
+Open the TODO for where you are.
+
+Commands:
+  (none)          Open this repository's TODO.md (anywhere inside the repo).
+                  Creates TODO.md at the repo root if it does not exist.
+  g, -g           Open the global TODO.md ($TODO_DIR/TODO.md).
+                  For TODOs that do not belong to any repository.
+  l, list, -l     List every repository's TODO plus the global one via fzf
+                  (with preview) and open the chosen file.
+  -h, --help      Show this help.
+
+Notes:
+  * 'todo' (no command) must be run inside a git repository.
+    Use 'todo -g' for the global TODO from anywhere.
+EOF
+}
+
+# Echo the TODO path to open for a given directory.
+# Prefers an existing TODO.md, then the legacy TODO, otherwise TODO.md (to create).
+resolve_todo() {
+  local dir="$1"
+  if [[ -f "$dir/TODO.md" ]]; then
+    print -r -- "$dir/TODO.md"
+  elif [[ -f "$dir/TODO" ]]; then
+    print -r -- "$dir/TODO"
+  else
+    print -r -- "$dir/TODO.md"
+  fi
+}
+
+# Echo a short label for a TODO file: "<repo-dir>/<file>", or "global/<file>"
+# for the global TODO. Uses the repo directory name (not the full path) so the
+# list stays short and does not assume any particular host/owner layout.
+label_for() {
+  local f="$1"
+  if [[ "$f" == "$TODO_DIR"/* ]]; then
+    print -r -- "global/${f:t}"
+  else
+    print -r -- "${f:h:t}/${f:t}"
+  fi
+}
+
+cmd_open() {
+  local root
+  if ! root="$(git rev-parse --show-toplevel 2>/dev/null)"; then
+    print -u2 "todo: not inside a git repository. Use 'todo -g' for the global TODO."
+    return 1
+  fi
+  vim "$(resolve_todo "$root")"
+}
+
+cmd_global() {
+  mkdir -p "$TODO_DIR"
+  vim "$(resolve_todo "$TODO_DIR")"
+}
+
+cmd_list() {
+  if ! command -v fzf >/dev/null 2>&1; then
+    print -u2 "todo: 'fzf' is required for 'todo list' but was not found in PATH."
+    return 1
+  fi
+
+  # Collect existing TODO files: global first, then every ghq repository.
+  # Prefer TODO.md, but also pick up the legacy TODO (skip a repo's TODO
+  # when it already has TODO.md, so a mid-migration repo shows only once).
+  local -a files
+  files=()
+  local d f
+  for d in "$TODO_DIR"; do
+    f="$(resolve_todo "$d")"
+    [[ -f "$f" ]] && files+=("$f")
+  done
+  if command -v ghq >/dev/null 2>&1; then
+    local -a repos
+    repos=(${(f)"$(ghq list --full-path 2>/dev/null)"})
+    for d in "${repos[@]}"; do
+      f="$(resolve_todo "$d")"
+      [[ -f "$f" ]] && files+=("$f")
+    done
+  fi
+
+  if (( ${#files} == 0 )); then
+    print "No TODO files found."
+    return 0
+  fi
+
+  # Build the fzf lines here (outside the $() below), so label_for's `local`
+  # runs in this shell. Declaring `local` directly inside a command
+  # substitution makes zsh print a typeset display that pollutes fzf's input.
+  # Column 1 is the full path (used by preview and to open); column 2 is a
+  # short "<repo>/<file>" label shown to the user.
+  local -a lines
+  lines=()
+  for f in "${files[@]}"; do
+    lines+=("$f"$'\t'"$(label_for "$f")")
+  done
+
+  # Prefer bat for a colorized markdown preview (TODO files are markdown even
+  # without a .md extension); fall back to cat when bat is unavailable.
+  # The theme follows the user's global bat config (managed in dotfiles).
+  local preview_cmd='cat {1}'
+  if command -v bat >/dev/null 2>&1; then
+    preview_cmd='bat --style=plain --color=always --language=markdown --paging=never {1}'
+  fi
+
+  local selected
+  selected=$(
+    printf '%s\n' "${lines[@]}" | fzf \
+      --layout=reverse \
+      --delimiter=$'\t' \
+      --with-nth=2 \
+      --preview="$preview_cmd" \
+      --preview-window=right:60%:wrap
+  )
+
+  [[ -z "$selected" ]] && return 0
+
+  local target="${selected%%$'\t'*}"
+  vim "$target"
+}
+
+main() {
+  if (( $# == 0 )); then
+    cmd_open
+    return
+  fi
+
+  case "$1" in
+    g|-g|--global)
+      cmd_global
+      ;;
+    l|list|-l|--list)
+      cmd_list
+      ;;
+    -h|--help|help)
+      usage
+      ;;
+    *)
+      print -u2 "todo: unknown command: $1"
+      usage >&2
+      return 1
+      ;;
+  esac
+}
+
+main "$@"
