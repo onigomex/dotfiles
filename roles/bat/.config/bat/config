@@ -1,0 +1,3 @@
+# bat の設定（dotfiles 管理）
+# テーマを Nord に統一し、他の nord 環境（dircolors など）と揃える。
+--theme="Nord"
