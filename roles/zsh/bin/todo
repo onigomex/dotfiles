@@ -49,18 +49,6 @@ resolve_todo() {
   fi
 }
 
-# Echo a short label for a TODO file: "<repo-dir>/<file>", or "global/<file>"
-# for the global TODO. Uses the repo directory name (not the full path) so the
-# list stays short and does not assume any particular host/owner layout.
-label_for() {
-  local f="$1"
-  if [[ "$f" == "$TODO_DIR"/* ]]; then
-    print -r -- "global/${f:t}"
-  else
-    print -r -- "${f:h:t}/${f:t}"
-  fi
-}
-
 cmd_open() {
   local root
   if ! root="$(git rev-parse --show-toplevel 2>/dev/null)"; then
@@ -81,40 +69,63 @@ cmd_list() {
     return 1
   fi
 
-  # Collect existing TODO files: global first, then every ghq repository.
-  # Prefer TODO.md, but also pick up the legacy TODO (skip a repo's TODO
-  # when it already has TODO.md, so a mid-migration repo shows only once).
-  local -a files
-  files=()
-  local d f
-  for d in "$TODO_DIR"; do
-    f="$(resolve_todo "$d")"
-    [[ -f "$f" ]] && files+=("$f")
-  done
+  # Build the fzf lines directly as "<full-path>\t<label>".
+  # Column 1 (full path) is used by the preview and to open the file; column 2
+  # is a short label shown to the user. Building the lines here (not inside the
+  # $() below) keeps the label logic in this shell: declaring `local` directly
+  # inside a command substitution makes zsh print a typeset display that would
+  # pollute fzf's input.
+  local -a lines
+  lines=()
+  local f
+
+  # Global TODO first.
+  f="$(resolve_todo "$TODO_DIR")"
+  [[ -f "$f" ]] && lines+=("$f"$'\t'"global/${f:t}")
+
+  # Every ghq repository, plus each repository's linked worktrees.
   if command -v ghq >/dev/null 2>&1; then
     local -a repos
     repos=(${(f)"$(ghq list --full-path 2>/dev/null)"})
-    for d in "${repos[@]}"; do
-      f="$(resolve_todo "$d")"
-      [[ -f "$f" ]] && files+=("$f")
+    local repo name wt br line
+    for repo in "${repos[@]}"; do
+      name="${repo:t}"
+
+      # The repository's own TODO (main worktree).
+      f="$(resolve_todo "$repo")"
+      [[ -f "$f" ]] && lines+=("$f"$'\t'"${name}/${f:t}")
+
+      # Linked worktrees of this repo (herdr keeps them under ~/.herdr/worktrees,
+      # outside the ghq root, so they are not covered by the ghq scan above).
+      # Parse `git worktree list --porcelain`: blank-line-separated records with
+      # "worktree <path>" and "branch refs/heads/<name>" lines. Skip the main
+      # worktree (path == repo) to avoid duplicating the entry added above.
+      wt=""; br=""
+      while IFS= read -r line; do
+        case "$line" in
+          "worktree "*) wt="${line#worktree }" ;;
+          "branch refs/heads/"*) br="${line#branch refs/heads/}" ;;
+          "")
+            if [[ -n "$wt" && "$wt" != "$repo" ]]; then
+              f="$(resolve_todo "$wt")"
+              [[ -f "$f" ]] && lines+=("$f"$'\t'"${name}@${br:-detached}/${f:t}")
+            fi
+            wt=""; br=""
+            ;;
+        esac
+      done < <(git -C "$repo" worktree list --porcelain 2>/dev/null)
+      # The last record may not be followed by a trailing blank line.
+      if [[ -n "$wt" && "$wt" != "$repo" ]]; then
+        f="$(resolve_todo "$wt")"
+        [[ -f "$f" ]] && lines+=("$f"$'\t'"${name}@${br:-detached}/${f:t}")
+      fi
     done
   fi
 
-  if (( ${#files} == 0 )); then
+  if (( ${#lines} == 0 )); then
     print "No TODO files found."
     return 0
   fi
-
-  # Build the fzf lines here (outside the $() below), so label_for's `local`
-  # runs in this shell. Declaring `local` directly inside a command
-  # substitution makes zsh print a typeset display that pollutes fzf's input.
-  # Column 1 is the full path (used by preview and to open); column 2 is a
-  # short "<repo>/<file>" label shown to the user.
-  local -a lines
-  lines=()
-  for f in "${files[@]}"; do
-    lines+=("$f"$'\t'"$(label_for "$f")")
-  done
 
   # Prefer bat for a colorized markdown preview (TODO files are markdown even
   # without a .md extension); fall back to cat when bat is unavailable.
