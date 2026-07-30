@@ -31,15 +31,12 @@ curl -fsSL https://raw.githubusercontent.com/onigomex/dotfiles/$DOTF_BRANCH/inst
 ```
 
 ### Specify a role file
+By default `roles.lst` (all roles) is installed. To install a subset, point `DOTF_ROLES_FILE` at your own list. The easiest way is to start from `roles.lst` and comment out (`#`) the roles you don't want.
 ```
-export DOTF_ROLES_FILE=roles.dev.lst
+curl -fsSL https://raw.githubusercontent.com/onigomex/dotfiles/HEAD/roles.lst > roles.lst
+${EDITOR:-vim} roles.lst   # comment out unwanted roles with '#'
+export DOTF_ROLES_FILE="$(pwd)/roles.lst"
 curl -fsSL https://raw.githubusercontent.com/onigomex/dotfiles/HEAD/install | zsh
-
-# Reuse an existing role file
-curl -s \
-  https://raw.githubusercontent.com/onigomex/dotfiles/refs/heads/main/roles.dev.lst \
-  https://raw.githubusercontent.com/onigomex/dotfiles/refs/heads/main/roles.etc.lst \
-  --output - > roles.lst
 ```
 
 ### Create a role file and specify it
@@ -86,12 +83,11 @@ curl -fsSL https://raw.githubusercontent.com/onigomex/dotfiles/$DOTF_BRANCH/inst
 make create ROLE=vim
 ```
 
-1. Define the dependent role names on the `roles/<ROLE>/dependencies` file. If does not exist, empty it or delete it.
 1. Implement `roles/<ROLE>/install.sh` file.
 1. If you want to define environment variables, define it in the `roles/<ROLE>/.zsh.d/<ROLE>.zshrc.env` file.
 1. If you want to define alias, define it in the `roles/<ROLE>/.zsh.d/<ROLE>.zshrc.alias` file.
 1. If you want to define other processes, define it in the `roles/<ROLE>/.zsh.d/<ROLE>.zshrc` file.
-1. Add `<ROLE>` to the matching category list (`roles.base.lst` / `roles.dev.lst` / `roles.etc.lst`) **and** to the combined `roles.lst`. Otherwise the role is not picked up by `make install` (without `ROLE=`). Removing a role requires deleting it from these lists too.
+1. Add `<ROLE>` to `roles.lst`. Otherwise the role is not picked up by `make install` (without `ROLE=`). Removing a role requires deleting it from `roles.lst` too.
 
 
 ### Update images
