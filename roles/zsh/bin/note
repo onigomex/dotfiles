@@ -19,7 +19,7 @@ Usage: note [command]
 A simple note-taking command.
 
 Commands:
-  (none)        Open \$XDG_CONFIG_HOME/note/NOTE.md in vim (creates if missing).
+  (none)        Open \$XDG_CONFIG_HOME/note/NOTE.md in nvim (creates if missing).
   new           Archive current NOTE.md, then open a fresh NOTE.md.
                 Archive path: \$XDG_CONFIG_HOME/note/archives/NOTE.YYYYMMDD-HHMMSS.md
   list          List archived notes via fzf (with preview) and open the chosen one.
@@ -30,7 +30,7 @@ EOF
 
 cmd_open() {
   mkdir -p "$NOTE_DIR"
-  vim "$NOTE_FILE"
+  nvim "$NOTE_FILE"
 }
 
 cmd_new() {
@@ -40,7 +40,7 @@ cmd_new() {
     ts="$(date +%Y%m%d-%H%M%S)"
     mv "$NOTE_FILE" "$ARCHIVE_DIR/NOTE.${ts}.md"
   fi
-  vim "$NOTE_FILE"
+  nvim "$NOTE_FILE"
 }
 
 cmd_list() {
@@ -82,7 +82,7 @@ cmd_list() {
   [[ -z "$selected" ]] && return 0
 
   local fname="${selected%%$'\t'*}"
-  vim "$ARCHIVE_DIR/$fname"
+  nvim "$ARCHIVE_DIR/$fname"
 }
 
 cmd_browse() {
