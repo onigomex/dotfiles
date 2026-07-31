@@ -5,6 +5,9 @@
 
 # TODO 運用のワーキングファイル（未完了リスト / 完了履歴）は個人用のため追跡しない
 # ※ リポジトリで TODO を追跡したいプロンプトの場合は git add -f で個別に追加する
+# TODO/TODO-DONE から TODO.md/DONE.md へ移行中のため両対応（移行完了後に旧名を削除）
 TODO
+TODO.md
 TODO-DONE
+DONE.md
 

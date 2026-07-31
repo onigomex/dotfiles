@@ -28,9 +28,11 @@ Temporary Items
 .apdisk
 
 # dotfiles
-TODO.txt
+# TODO 運用のワーキングファイル。TODO/TODO-DONE から TODO.md/DONE.md へ移行中のため両対応。
 TODO
+TODO.md
 TODO-DONE
+DONE.md
 
 # Claude
 .claude/**/*.bak*
