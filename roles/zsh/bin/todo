@@ -5,11 +5,6 @@
 # Storage layout:
 #   <git repo root>/TODO.md                      ... per-repository TODO
 #   $XDG_CONFIG_HOME/todo/TODO.md                ... global TODO (todo -g)
-#
-# During the TODO -> TODO.md migration this command also recognizes the
-# legacy extension-less "TODO" file (prefers "TODO.md" when both exist).
-# New files are always created as "TODO.md". Once every repository has
-# migrated, the legacy fallback can be dropped.
 
 set -eu
 
@@ -36,17 +31,9 @@ Notes:
 EOF
 }
 
-# Echo the TODO path to open for a given directory.
-# Prefers an existing TODO.md, then the legacy TODO, otherwise TODO.md (to create).
+# Echo the TODO path for a given directory (created on open if missing).
 resolve_todo() {
-  local dir="$1"
-  if [[ -f "$dir/TODO.md" ]]; then
-    print -r -- "$dir/TODO.md"
-  elif [[ -f "$dir/TODO" ]]; then
-    print -r -- "$dir/TODO"
-  else
-    print -r -- "$dir/TODO.md"
-  fi
+  print -r -- "$1/TODO.md"
 }
 
 cmd_open() {
@@ -127,8 +114,8 @@ cmd_list() {
     return 0
   fi
 
-  # Prefer bat for a colorized markdown preview (TODO files are markdown even
-  # without a .md extension); fall back to cat when bat is unavailable.
+  # Prefer bat for a colorized markdown preview; fall back to cat when bat is
+  # unavailable.
   # The theme follows the user's global bat config (managed in dotfiles).
   local preview_cmd='cat {1}'
   if command -v bat >/dev/null 2>&1; then

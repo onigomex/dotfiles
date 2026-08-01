@@ -28,10 +28,8 @@ Temporary Items
 .apdisk
 
 # dotfiles
-# TODO 運用のワーキングファイル。TODO/TODO-DONE から TODO.md/DONE.md へ移行中のため両対応。
-TODO
+# TODO 運用のワーキングファイル（未完了リスト / 完了履歴）は個人用のため追跡しない
 TODO.md
-TODO-DONE
 DONE.md
 
 # Claude
