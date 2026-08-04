@@ -29,5 +29,5 @@ function toggle_application(_app)
 end
 -- keymap: Console > hs.inspect(hs.keycodes.map)
 -- smei_colon:41, dot:47, comma:43, lightcmd:54
-hs.hotkey.bind(cmd_shift, 41, function() toggle_application("WezTerm") end)
-hs.hotkey.bind(cmd_shift, 47, function() toggle_application("Google Chrome") end)
+hs.hotkey.bind(cmd_shift, 41, function() toggle_application("Ghostty") end)       -- ⌘⇧; (セミコロン)
+hs.hotkey.bind(cmd_shift, 47, function() toggle_application("Google Chrome") end) -- ⌘⇧. (ピリオド)
