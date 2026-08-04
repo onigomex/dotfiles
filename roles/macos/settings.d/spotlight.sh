@@ -3,29 +3,44 @@ set -e
 
 # Siri & Spotlight
 # 単体実行: zsh roles/macos/settings.d/spotlight.sh
-# - [ ] Search results（Applications / Folders のみ ON）
+# - [x] 「Apple の検索機能の改善に協力」: OFF
+# - [x] 検索結果: Applications / Folders のみ ON（他カテゴリ＋アプリからの結果は OFF）
+# - [x] Spotlight 内のクリップボード履歴: OFF（クリップボード管理は Maccy を使うため）
+#
+# ※ macOS 26 Tahoe の実測キャプチャ由来（EnabledPreferenceRules は非公開スキーマ）。
+#    GUI で全カテゴリを ON にした状態（＝空配列）をベースラインに、理想形との差分で
+#    「OFF にした源の配列」を確定した（2026-08-04）。ラウンドトリップ検証で再現性を確認済み。
+#    OS メジャー更新でスキーマが変わったら要再キャプチャ（取得手順は README の「キャプチャ」参照）。
 
-## Search results
-### FIXME: まともに動かないのでいつか修正する。 See: https://github.com/search?q=defaults+write+com.apple.spotlight+orderedItems&type=code
-# defaults write com.apple.spotlight orderedItems -array \
-#   '{ "enabled" = 1; "name" = "APPLICATIONS"; }' \
-#   '{ "enabled" = 1; "name" = "MENU_EXPRESSION"; }' \
-#   '{ "enabled" = 0; "name" = "CONTACT"; }' \
-#   '{ "enabled" = 0; "name" = "MENU_CONVERSION"; }' \
-#   '{ "enabled" = 0; "name" = "MENU_DEFINITION"; }' \
-#   '{ "enabled" = 0; "name" = "DOCUMENTS"; }' \
-#   '{ "enabled" = 0; "name" = "EVENT_TODO"; }' \
-#   '{ "enabled" = 1; "name" = "DIRECTORIES"; }' \
-#   '{ "enabled" = 0; "name" = "FONTS"; }' \
-#   '{ "enabled" = 0; "name" = "IMAGES"; }' \
-#   '{ "enabled" = 0; "name" = "MESSAGES"; }' \
-#   '{ "enabled" = 0; "name" = "MOVIES"; }' \
-#   '{ "enabled" = 0; "name" = "MUSIC"; }' \
-#   '{ "enabled" = 0; "name" = "MENU_OTHER"; }' \
-#   '{ "enabled" = 0; "name" = "PDF"; }' \
-#   '{ "enabled" = 0; "name" = "PRESENTATIONS"; }' \
-#   '{ "enabled" = 0; "name" = "MENU_SPOTLIGHT_SUGGESTIONS"; }' \
-#   '{ "enabled" = 0; "name" = "SPREADSHEETS"; }' \
-#   '{ "enabled" = 1; "name" = "SYSTEM_PREFS"; }' \
-#   '{ "enabled" = 0; "name" = "TIPS"; }' \
-#   '{ "enabled" = 0; "name" = "BOOKMARKS"; }'
+## 「Apple の検索機能の改善に協力」OFF（2 = opt-out）
+defaults write com.apple.assistant.support "Search Queries Data Sharing Status" -int 2
+
+## 検索結果: Applications / Folders のみ ON
+## （下記に列挙した源が OFF になる。全 ON = 空配列。-array で置換＝冪等）
+defaults write com.apple.Spotlight EnabledPreferenceRules -array \
+  "Custom.relatedContents" \
+  "System.iphoneApps" \
+  "System.files" \
+  "System.menuItems" \
+  "com.apple.AppStore" \
+  "com.apple.Safari" \
+  "com.apple.iCal" \
+  "com.apple.systempreferences" \
+  "com.apple.shortcuts" \
+  "com.apple.tips" \
+  "com.apple.iBooksX" \
+  "com.apple.VoiceMemos" \
+  "com.apple.podcasts" \
+  "com.apple.mail" \
+  "com.apple.MobileSMS" \
+  "com.apple.Notes" \
+  "com.apple.reminders" \
+  "com.apple.calculator" \
+  "com.apple.Dictionary" \
+  "com.apple.Photos" \
+  "com.apple.AddressBook"
+
+## Spotlight 内のクリップボード履歴 OFF（Maccy を使うため）
+defaults write com.apple.Spotlight PasteboardHistoryEnabled -bool false
+
+killall Spotlight 2>/dev/null || true

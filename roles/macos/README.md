@@ -24,7 +24,6 @@ roles/macos/
 │   ├── spotlight.sh    # Siri & Spotlight
 │   ├── screenshot.sh   # Screen Shot
 │   ├── feedback.sh     # Crash Report / Feedback
-│   ├── terminal.sh     # Terminal.app プロファイル
 │   └── misc.sh         # .DS_Store / 大文字自動化 など
 └── README.md
 ```
