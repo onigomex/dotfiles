@@ -10,13 +10,9 @@ brew list --cask hammerspoon > /dev/null 2>&1 || {
 
 (
 cd ${CURRENT_PATH}
+# .hammerspoon（config/ と Spoons/SpoonInstall.spoon を含む）を配布する。
+# 他の Spoon（Caffeine 等）は init.lua の SpoonInstall:andUse が実行時に取得する。
 cp -fr .hammerspoon ${HOME}
-
-# Spoons
-mkdir -p ${HOME}/.hammerspoon/Spoons
-
-## Caffeine
-curl -sL https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Caffeine.spoon.zip -# | /usr/bin/tar xz -C ~/.hammerspoon/Spoons/
 )
 
 defaults write -app Terminal AppleLanguages "(en, ja)"

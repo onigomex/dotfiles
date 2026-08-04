@@ -1,0 +1,5 @@
+# Spoon は実行時に SpoonInstall が公式リポジトリから取得するため追跡しない。
+# 管理者スプーンである SpoonInstall.spoon だけを vendor（コミット）する。
+/*
+!/.gitignore
+!/SpoonInstall.spoon/
