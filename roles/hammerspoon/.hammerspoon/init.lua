@@ -8,3 +8,6 @@ require("config.behavior")     -- Preferences > Behavior
 require("config.app_toggle")   -- アプリ トグル（ホットキー）
 require("config.ime")          -- En/Ja 切替
 require("config.caffeine")     -- Caffeine（スリープ防止）
+require("config.clipboard")    -- クリップボード履歴（ClipboardTool・試用）
+require("config.translate")    -- 選択テキストの翻訳（PopupTranslateSelection）
+require("config.keybindings")  -- 自分のショートカット一覧（HSKeybindings・未検証のため最後）
