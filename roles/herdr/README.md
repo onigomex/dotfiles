@@ -115,6 +115,8 @@ herdr-claude-workspace [prompt]
 - `herdr agent start` は claude が**入力を受け付けられる状態になるまで待ってから返る**ので、`sleep` で起動を待つ必要が無い。
 - 既に同じリポジトリのワークスペースがある場合は、新規作成せずそれにフォーカスする（同じチェックアウトを二重に開くと、どちらで作業したか分からなくなる）。同じリポジトリを並行して開きたいときは git worktree を作ってそちらを開く。
 - キー割当は `[[keys.command]]`（`type = "popup"` はセッションモーダルの一時ペイン）。`prefix+c` は素の `new_workspace` から明け渡した。リポジトリも claude も無い空のワークスペースを開きたい場面が実際には無かったので、よく使うほうを押しやすいキーに置いた。素のワークスペースが要るときは herdr 既定の `prefix+shift+n`。
+- **セットアップが終わるまでフォーカスを動かしてはいけない。** popup から実行しているとき、別のワークスペースにフォーカスを移すと popup が閉じ、実行中のスクリプトごと殺される。`workspace create --focus` にしていたときは、`agent start`（claude の起動待ちで数秒ブロックする）の途中で落ちて、「ペインは 2 つあるが claude がいない」ワークスペースが残った。作成も分割も `--no-focus` で行い、フォーカスは最後にまとめて移す。
+- popup のタイトルは端末が報告する OSC 0 タイトルで付けている。`[[keys.command]]` に title 相当のキーは無い（`title` / `label` / `name` を試すと reload が `unknown config key` を返す）。
 - popup のコマンドが `zsh -ic`（対話シェル）なのは PATH のため。この環境の zsh 起動ファイルは `~/.zshrc` だけで `~/.zshenv` も `~/.zprofile` も無く、zsh は `.zshrc` を対話シェルでしか読まないので、`-lc`（ログイン・非対話）では `~/bin` に PATH が通らない。
 
 
