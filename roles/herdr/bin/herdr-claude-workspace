@@ -1,0 +1,105 @@
+#!/usr/bin/env zsh
+
+# herdr-claude-workspace - pick a repository and open a herdr workspace laid out for work:
+# claude on the left, a plain terminal on the right, with the first prompt already sent.
+#
+# This replaces the manual routine of: new workspace -> repo -> claude -> type the first
+# prompt -> split -> terminal.
+#
+# If a workspace for the chosen repository already exists, it is focused instead of
+# creating a second one (two workspaces on the same checkout is a recipe for losing
+# track of which one you were working in). To work on the same repository in parallel,
+# make a git worktree and open that.
+
+set -eu
+
+readonly DEFAULT_PROMPT="hello"
+readonly AGENT_NAME="claude"
+readonly START_TIMEOUT_MS=60000
+
+usage() {
+  cat <<EOF
+Usage: herdr-claude-workspace [prompt]
+
+Pick a ghq repository with fzf and open a herdr workspace for it:
+  * left pane  ... claude, with <prompt> already submitted
+  * right pane ... a plain terminal in the same directory
+
+Arguments:
+  prompt          First prompt to send to claude (default: "$DEFAULT_PROMPT").
+
+Notes:
+  * Must run inside a herdr session (it talks to the herdr server over its socket API).
+  * If the repository already has a workspace, that workspace is focused and nothing
+    else happens.
+EOF
+}
+
+require() {
+  local cmd
+  for cmd in "$@"; do
+    command -v "$cmd" >/dev/null 2>&1 || {
+      print -u2 "herdr-claude-workspace: '$cmd' is required but was not found in PATH."
+      return 1
+    }
+  done
+}
+
+# Echo the repository chosen with fzf, or nothing when the user cancels.
+select_repository() {
+  local root target
+  root="$(ghq root)"
+  target="$(ghq list | sort | uniq \
+    | fzf -0 --inline-info --ansi --cycle \
+          --prompt 'claude workspace> ' \
+          --preview "ls -la $root/{}")" || return 0
+  [[ -n "$target" ]] && print -r -- "$root/$target"
+}
+
+# Echo the id of an existing workspace whose pane sits in <dir>, or nothing.
+find_workspace() {
+  herdr pane list \
+    | jq -r --arg cwd "$1" '.result.panes[] | select(.cwd == $cwd) | .workspace_id' \
+    | head -n 1
+}
+
+open_workspace() {
+  local dir="$1" prompt="$2"
+  local left
+
+  # --focus so the new workspace is already in view while claude boots.
+  left="$(herdr workspace create --cwd "$dir" --focus | jq -r '.result.root_pane.pane_id')"
+
+  herdr pane split "$left" --direction right --ratio 0.5 --cwd "$dir" --no-focus >/dev/null
+
+  # 'agent start' returns once claude is actually accepting input, so the prompt below
+  # never races the startup banner.
+  print -r -- "herdr-claude-workspace: starting claude in ${dir:t} ..."
+  herdr agent start "$AGENT_NAME" --kind claude --pane "$left" --timeout "$START_TIMEOUT_MS" >/dev/null
+  herdr agent prompt "$left" "$prompt" >/dev/null
+  herdr agent focus "$left" >/dev/null
+}
+
+main() {
+  case "${1:-}" in
+    -h|--help) usage; return 0 ;;
+  esac
+
+  require herdr ghq fzf jq
+
+  local dir prompt existing
+  prompt="${1:-$DEFAULT_PROMPT}"
+
+  dir="$(select_repository)"
+  [[ -n "$dir" ]] || return 0
+
+  existing="$(find_workspace "$dir")"
+  if [[ -n "$existing" ]]; then
+    herdr workspace focus "$existing" >/dev/null
+    return 0
+  fi
+
+  open_workspace "$dir" "$prompt"
+}
+
+main "$@"

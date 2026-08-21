@@ -90,6 +90,35 @@ last_pane        = "prefix+semicolon"                  # 直前のペイン：tm
 
 
 
+## 作業開始を 1 キーにまとめる（`herdr-claude-workspace` / `prefix+c`）
+
+いつもの手順（新規ワークスペース → `repo` でリポジトリ選択 → `claude` 起動 → `hello` と入力 → ペイン分割 → 右にターミナル）を 1 アクションに畳んだもの。
+
+```
+prefix+c            # herdr 上（popup で fzf が開く）
+c                   # 素のターミナルから（alias）
+herdr-claude-workspace [prompt]
+```
+
+やること:
+
+1. `ghq list` を fzf で選ばせる（UI は `repo` コマンドと同じ）
+2. そのリポジトリを cwd にワークスペースを作成（ラベルはディレクトリ名が自動で付く）
+3. 右に 50% でターミナルを分割
+4. 左で claude を起動し、最初のプロンプト（既定 `hello`）を送信してフォーカス
+
+`hello` に意味は無くてよい。SessionStart フックが TODO を差し込むので、claude 側は「挨拶されたので TODO を要約して次を訊く」という素直な反応をする。具体的な指示を書くとその言い回しがセッションの方向づけになるため、あえて無味な起点にしている。引数で上書きできる。
+
+### 実装メモ
+- herdr の socket API（`herdr workspace create` / `pane split` / `agent start` / `agent prompt` / `agent focus`）を叩いているだけ。出力は JSON なので `jq` で `pane_id` を拾う。
+- 実体を 1 文字の `c` にせず `herdr-claude-workspace` にしたのは、`help` や `~/bin` を見たときに何のコマンドか分かるようにするため。日常の打鍵は alias で短くする。
+- `herdr agent start` は claude が**入力を受け付けられる状態になるまで待ってから返る**ので、`sleep` で起動を待つ必要が無い。
+- 既に同じリポジトリのワークスペースがある場合は、新規作成せずそれにフォーカスする（同じチェックアウトを二重に開くと、どちらで作業したか分からなくなる）。同じリポジトリを並行して開きたいときは git worktree を作ってそちらを開く。
+- キー割当は `[[keys.command]]`（`type = "popup"` はセッションモーダルの一時ペイン）。`prefix+c` は素の `new_workspace` から明け渡した。リポジトリも claude も無い空のワークスペースを開きたい場面が実際には無かったので、よく使うほうを押しやすいキーに置いた。素のワークスペースが要るときは herdr 既定の `prefix+shift+n`。
+- popup のコマンドが `zsh -ic`（対話シェル）なのは PATH のため。この環境の zsh 起動ファイルは `~/.zshrc` だけで `~/.zshenv` も `~/.zprofile` も無く、zsh は `.zshrc` を対話シェルでしか読まないので、`-lc`（ログイン・非対話）では `~/bin` に PATH が通らない。
+
+
+
 ## References
 - https://github.com/ogulcancelik/herdr
 

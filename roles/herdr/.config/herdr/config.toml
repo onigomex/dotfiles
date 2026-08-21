@@ -19,16 +19,30 @@ cycle_pane_next = ["prefix+tab", "prefix+o"]  # 既定 + tmux: prefix + o（次�
 last_pane = "prefix+semicolon"  # tmux: prefix + ;（直前のペイン）
 
 # --- ワークスペースをタブ感覚で操作（旧タブ操作の指づかいを流用） ---
-new_workspace      = ["prefix+shift+n", "prefix+c"]  # 既定 shift+n を残しつつ prefix+c（旧: 新規タブ）でも新規ワークスペース
+new_workspace      = "prefix+shift+n"                # 素の新規ワークスペース（prefix+c は下のカスタムコマンドへ明け渡した）
 next_workspace     = "prefix+n"                      # 次のワークスペース（旧: 次のタブ）
 previous_workspace = "prefix+p"                      # 前のワークスペース（旧: 前のタブ）
 switch_workspace   = "prefix+1..9"                   # 番号ジャンプ（旧: タブ番号ジャンプ）
 
 # --- 旧タブ操作を退避（衝突回避。タブは当面 shift+c での新規のみ） ---
-new_tab      = "prefix+shift+c"  # タブが欲しいときはこちら（prefix+c は new_workspace へ明け渡し）
+new_tab      = "prefix+shift+c"  # タブが欲しいときはこちら（prefix+c はカスタムコマンドへ明け渡し）
 next_tab     = ""                # 当面無効（必要時に割当）
 previous_tab = ""                # 当面無効
 switch_tab   = ""                # 当面無効（prefix+1..9 は switch_workspace へ）
+
+# --- カスタムコマンド ---
+# prefix+c: fzf でリポジトリを選び、「左 claude（hello 送信済み）/ 右ターミナル」の
+# ワークスペースを開く。毎回手でやっていた一連の手順を 1 キーに畳んだもの。
+# type = "popup" はセッションモーダルの一時ペインなので、fzf の選択 UI をそのまま出せる。
+# zsh -ic（対話シェル）なのは PATH（~/bin）を通すため。この環境の zsh 起動ファイルは
+# ~/.zshrc だけで、~/.zshenv も ~/.zprofile も無い。zsh は .zshrc を対話シェルでしか
+# 読まないので、-lc（ログイン・非対話）では ~/bin に PATH が通らず実行できない。
+[[keys.command]]
+key = "prefix+c"
+type = "popup"
+command = "zsh -ic herdr-claude-workspace"
+width = "60%"
+height = "60%"
 
 [experimental]
 pane_history = false
