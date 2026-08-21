@@ -95,9 +95,8 @@ last_pane        = "prefix+semicolon"                  # 直前のペイン：tm
 いつもの手順（新規ワークスペース → `repo` でリポジトリ選択 → `claude` 起動 → `hello` と入力 → ペイン分割 → 右にターミナル）を 1 アクションに畳んだもの。
 
 ```
-prefix+c            # herdr 上（一時ペインで fzf が開く）
-c                   # 素のターミナルから（alias）
-herdr-claude-workspace [prompt]
+prefix+c                          # herdr 上（一時ペインで fzf が開く）
+herdr-claude-workspace [prompt]   # 素のターミナルから
 ```
 
 やること:
@@ -111,7 +110,7 @@ herdr-claude-workspace [prompt]
 
 ### 実装メモ
 - herdr の socket API（`herdr workspace create` / `pane split` / `agent start` / `agent prompt` / `agent focus`）を叩いているだけ。出力は JSON なので `jq` で `pane_id` を拾う。
-- 実体を 1 文字の `c` にせず `herdr-claude-workspace` にしたのは、`help` や `~/bin` を見たときに何のコマンドか分かるようにするため。日常の打鍵は alias で短くする。
+- 短い alias（`c`）は付けない。日常の入口は `prefix+c` で、コマンドを直に打つのは稀。名前を忘れたら `help` に載っている。
 - `herdr agent start` は claude が**入力を受け付けられる状態になるまで待ってから返る**ので、`sleep` で起動を待つ必要が無い。
 - 既に同じリポジトリのワークスペースがある場合は、新規作成せずそれにフォーカスする（同じチェックアウトを二重に開くと、どちらで作業したか分からなくなる）。同じリポジトリを並行して開きたいときは git worktree を作ってそちらを開く。
 - `prefix+c` は素の `new_workspace` から明け渡した。リポジトリも claude も無い空のワークスペースを開きたい場面が実際には無かったので、よく使うほうを押しやすいキーに置いた。素のワークスペースが要るときは herdr 既定の `prefix+shift+n`。

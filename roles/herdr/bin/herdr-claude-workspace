@@ -15,6 +15,7 @@ set -eu
 
 readonly DEFAULT_PROMPT="hello"
 readonly START_TIMEOUT_MS=60000
+readonly SHELL_READY_TIMEOUT_MS=10000
 
 usage() {
   cat <<EOF
@@ -55,6 +56,24 @@ select_repository() {
   [[ -n "$target" ]] && print -r -- "$root/$target"
 }
 
+# Wait until <pane> is sitting at an idle shell prompt.
+# herdr refuses to start an agent in a pane that is running something
+# (agent_pane_busy: "is not an available shell"), and a freshly created pane is still
+# running its zsh startup for a moment. The shell is idle once it is its own
+# foreground process group.
+wait_for_shell() {
+  local pane="$1" i
+  for (( i = 0; i < SHELL_READY_TIMEOUT_MS / 100; i++ )); do
+    herdr pane process-info --pane "$pane" \
+      | jq -e '.result.process_info
+               | .shell_pid != null and .shell_pid == .foreground_process_group_id' \
+        >/dev/null 2>&1 && return 0
+    sleep 0.1
+  done
+  print -u2 "herdr-claude-workspace: pane $pane never settled at a shell prompt."
+  return 1
+}
+
 # Echo the id of an existing workspace whose pane sits in <dir>, or nothing.
 find_workspace() {
   herdr pane list \
@@ -78,6 +97,7 @@ open_workspace() {
   # 'agent start' returns once claude is actually accepting input, so the prompt below
   # never races the startup banner.
   print -r -- "herdr-claude-workspace: starting claude in ${dir:t} ..."
+  wait_for_shell "$left"
   # The agent name must be unique in the session (herdr answers agent_name_taken
   # otherwise), so name it after the repository rather than hardcoding "claude".
   herdr agent start "${dir:t}" --kind claude --pane "$left" --timeout "$START_TIMEOUT_MS" >/dev/null
