@@ -31,7 +31,7 @@
 - 新しいリポジトリでも、何もしなくても直下の `_work/` が追跡対象から外れる。
 - 反面、**この dotfiles を入れていない環境（他人の PC / CI）では効かない**。だから 3 の重複が保険として効く。
 - ネストした `_work/`（例: `sub/_work/`）は無視されない。必要になったリポジトリは自前の `.gitignore` で対応する。
-- 既存環境への反映は `~/.config/git/.gitignore_global` への追記で行った。`roles/git` に `update.sh` が無いため、ownrule を変えたときの再生成は `make install ROLE=git`（sudo と git-secrets の clone を伴う）か手作業になる。軽量な `roles/git/update.sh` の追加は別途検討する。
+- 既存環境へは `~/.config/git/.gitignore_global` を ownrule から再生成して反映した。以後 ownrule を変えたときの再反映は `make install ROLE=git` で行う。
 
 ## 関連
 - tradingview リポジトリ `docs/adr/0016`: `_work/` 運用の初出。中身の扱いにルールを設けない理由はそちらにある。
