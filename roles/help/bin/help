@@ -14,8 +14,8 @@ cat << 'EOF'
 - git-unstage: 'git reset HEAD'
 - k: kubectl
 - repo: src 直下を fzf し、選択したら cd
-- herdr-claude-workspace: リポジトリを fzf で選び、herdr に「左 claude（hello 送信済み）/
-     右ターミナル」のワークスペースを開く。herdr 上なら prefix+c が同じことをする。
+- herdr-claude-workspace: リポジトリを fzf で選び、herdr に「左 claude / 右ターミナル」の
+     ワークスペースを開く。herdr 上なら prefix+c が同じことをする。
 - zi: 高アクセス頻度dir を fzf し、選択したら cd
 - z <ディレクトリ断片>: z 移動したいディレクトリの断片（e.g., z D => cd ~/Download）
 - aws-nuke: aws nuke

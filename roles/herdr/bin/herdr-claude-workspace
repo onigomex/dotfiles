@@ -1,10 +1,13 @@
 #!/usr/bin/env zsh
 
 # herdr-claude-workspace - pick a repository and open a herdr workspace laid out for work:
-# claude on the left, a plain terminal on the right, with the first prompt already sent.
+# claude on the left, a plain terminal on the right.
 #
-# This replaces the manual routine of: new workspace -> repo -> claude -> type the first
-# prompt -> split -> terminal.
+# Deliberately minimal: it opens the workspace and gets out of the way. It does not send
+# a first prompt and takes no arguments - type whatever you want once the workspace is up.
+# The earlier version submitted a prompt for you and cost 3.96s, because sending a prompt
+# means blocking until claude is ready to accept input. This one returns in ~0.3s and
+# claude boots in front of you. See roles/herdr/README.md for how to get that version back.
 #
 # If a workspace for the chosen repository already exists, it is focused instead of
 # creating a second one (two workspaces on the same checkout is a recipe for losing
@@ -13,22 +16,17 @@
 
 set -eu
 
-readonly DEFAULT_PROMPT="hello"
-readonly START_TIMEOUT_MS=60000
 readonly SHELL_READY_TIMEOUT_MS=10000
-readonly PROMPT_TIMEOUT_MS=15000
-readonly PROMPT_ATTEMPTS=3
 
 usage() {
   cat <<EOF
-Usage: herdr-claude-workspace [prompt]
+Usage: herdr-claude-workspace
 
 Pick a ghq repository with fzf and open a herdr workspace for it:
-  * left pane  ... claude, with <prompt> already submitted
+  * left pane  ... claude
   * right pane ... a plain terminal in the same directory
 
-Arguments:
-  prompt          First prompt to send to claude (default: "$DEFAULT_PROMPT").
+Takes no arguments. Type your first prompt yourself once claude is up.
 
 Notes:
   * Must run inside a herdr session (it talks to the herdr server over its socket API).
@@ -58,11 +56,9 @@ select_repository() {
   [[ -n "$target" ]] && print -r -- "$root/$target"
 }
 
-# Wait until <pane> is sitting at an idle shell prompt.
-# herdr refuses to start an agent in a pane that is running something
-# (agent_pane_busy: "is not an available shell"), and a freshly created pane is still
-# running its zsh startup for a moment. The shell is idle once it is its own
-# foreground process group.
+# Wait until <pane> is sitting at an idle shell prompt, so the command we type into it
+# is not lost to a shell that is still running its startup. The shell is idle once it is
+# its own foreground process group.
 wait_for_shell() {
   local pane="$1" i
   for (( i = 0; i < SHELL_READY_TIMEOUT_MS / 100; i++ )); do
@@ -76,24 +72,6 @@ wait_for_shell() {
   return 1
 }
 
-# Submit the first prompt, making sure it actually landed.
-# claude sometimes drops input during the first seconds (it is still painting its
-# banner and any "Update available!" notice), and the submission is lost with no
-# error - the input box just stays empty. '--wait' turns that into a failure we can
-# see: it requires an observed state change before matching, so a dropped prompt
-# times out instead of reporting success. Resubmitting is safe precisely because a
-# dropped prompt leaves nothing behind.
-submit_prompt() {
-  local target="$1" prompt="$2" attempt
-  for (( attempt = 1; attempt <= PROMPT_ATTEMPTS; attempt++ )); do
-    herdr agent prompt "$target" "$prompt" \
-      --wait --until working --timeout "$PROMPT_TIMEOUT_MS" >/dev/null 2>&1 && return 0
-    print -r -- "herdr-claude-workspace: the first prompt did not land (attempt $attempt); retrying ..."
-  done
-  # The workspace itself is fine, so do not fail the run over this.
-  print -u2 "herdr-claude-workspace: gave up submitting the first prompt; type it yourself."
-}
-
 # Echo the id of an existing workspace whose pane sits in <dir>, or nothing.
 find_workspace() {
   herdr pane list \
@@ -102,45 +80,43 @@ find_workspace() {
 }
 
 open_workspace() {
-  local dir="$1" prompt="$2"
+  local dir="$1"
   local created workspace left
 
-  # Nothing here may move the focus until the very last step. Focus changes can tear
-  # down the terminal this script is running in (a herdr popup dies outright), which
-  # used to leave a workspace with panes but no claude.
+  # Nothing here may move the focus until the very last step. Focus changes tear down
+  # the popup this script runs in, and anything left undone would be lost with it.
   created="$(herdr workspace create --cwd "$dir" --no-focus)"
   workspace="$(print -r -- "$created" | jq -r '.result.workspace.workspace_id')"
   left="$(print -r -- "$created" | jq -r '.result.root_pane.pane_id')"
 
   herdr pane split "$left" --direction right --ratio 0.5 --cwd "$dir" --no-focus >/dev/null
 
-  # 'agent start' returns once herdr sees claude as interactive, but that is not a
-  # guarantee that claude will keep the next keystrokes - hence submit_prompt below.
-  print -r -- "herdr-claude-workspace: starting claude in ${dir:t} ..."
+  # 'pane run' just types the command and returns; claude boots in the workspace we are
+  # about to focus, in full view, instead of behind a popup you have to wait on.
   wait_for_shell "$left"
-  # The agent name must be unique in the session (herdr answers agent_name_taken
-  # otherwise), so name it after the repository rather than hardcoding "claude".
-  herdr agent start "${dir:t}" --kind claude --pane "$left" --timeout "$START_TIMEOUT_MS" >/dev/null
-  submit_prompt "$left" "$prompt"
+  herdr pane run "$left" claude >/dev/null
 
   herdr workspace focus "$workspace" >/dev/null
-  herdr agent focus "$left" >/dev/null
 }
 
 main() {
   case "${1:-}" in
     -h|--help) usage; return 0 ;;
   esac
+  if (( $# > 0 )); then
+    print -u2 "herdr-claude-workspace: takes no arguments."
+    usage >&2
+    return 1
+  fi
 
   require herdr ghq fzf jq
 
-  # Name the terminal so the temporary pane shows what it is. [[keys.command]] has no
-  # title option (reload reports 'unknown config key keys.command.0.title'), so the
-  # only handle is the OSC 0 title the terminal itself reports.
+  # Name the terminal so the popup shows what it is. [[keys.command]] has no title
+  # option (reload reports 'unknown config key keys.command.0.title'), so the only
+  # handle is the OSC 0 title the terminal itself reports.
   print -n "\e]0;claude workspace\a"
 
-  local dir prompt existing
-  prompt="${1:-$DEFAULT_PROMPT}"
+  local dir existing
 
   dir="$(select_repository)"
   [[ -n "$dir" ]] || return 0
@@ -151,7 +127,7 @@ main() {
     return 0
   fi
 
-  open_workspace "$dir" "$prompt"
+  open_workspace "$dir"
 }
 
 main "$@"
