@@ -92,11 +92,11 @@ last_pane        = "prefix+semicolon"                  # 直前のペイン：tm
 
 ## 作業開始を 1 キーにまとめる（`herdr-claude-workspace` / `prefix+c`）
 
-いつもの手順（新規ワークスペース → `repo` でリポジトリ選択 → `claude` 起動 → `hello` と入力 → ペイン分割 → 右にターミナル）を 1 アクションに畳んだもの。
+いつもの手順（新規ワークスペース → `repo` でリポジトリ選択 → `claude` 起動 → ペイン分割 → 右にターミナル）を 1 アクションに畳んだもの。
 
 ```
-prefix+c                          # herdr 上（一時ペインで fzf が開く）
-herdr-claude-workspace [prompt]   # 素のターミナルから
+prefix+c                 # herdr 上（popup で fzf が開く）
+herdr-claude-workspace   # 素のターミナルから
 ```
 
 やること:
@@ -104,24 +104,52 @@ herdr-claude-workspace [prompt]   # 素のターミナルから
 1. `ghq list` を fzf で選ばせる（UI は `repo` コマンドと同じ）
 2. そのリポジトリを cwd にワークスペースを作成（ラベルはディレクトリ名が自動で付く）
 3. 右に 50% でターミナルを分割
-4. 左で claude を起動し、最初のプロンプト（既定 `hello`）を送信してフォーカス
+4. 左のペインで `claude` を実行し、そのワークスペースへ表示を切り替える
 
-`hello` に意味は無くてよい。SessionStart フックが TODO を差し込むので、claude 側は「挨拶されたので TODO を要約して次を訊く」という素直な反応をする。具体的な指示を書くとその言い回しがセッションの方向づけになるため、あえて無味な起点にしている。引数で上書きできる。
+**最初のプロンプトは送らない。引数も取らない。** claude が立ち上がったら自分で打つ。理由は下記。
+
+### 要件（削らないもの）
+- 右ペインのターミナル
+- 同じリポジトリのワークスペースが既にあるときは、新規作成せずそれにフォーカスする（同じチェックアウトを二重に開くと、どちらで作業したか分からなくなる）。同じリポジトリを並行して開きたいときは git worktree を作ってそちらを開く
 
 ### 実装メモ
-- herdr の socket API（`herdr workspace create` / `pane split` / `agent start` / `agent prompt` / `agent focus`）を叩いているだけ。出力は JSON なので `jq` で `pane_id` を拾う。
+- herdr の socket API（`herdr workspace create` / `pane split` / `pane run` / `workspace focus`）を叩いているだけ。出力は JSON なので `jq` で `pane_id` を拾う。
 - 短い alias（`c`）は付けない。日常の入口は `prefix+c` で、コマンドを直に打つのは稀。名前を忘れたら `help` に載っている。
-- `herdr agent start` は herdr が claude を対話状態と見なすまで待ってから返るので、`sleep` で起動を待つ必要は無い。ただし**それは次の入力が受け取られる保証ではない**。claude は起動直後の数秒（バナーや `Update available!` の描画中）に入力を取りこぼすことがあり、エラーも出ないまま入力欄が空のままになる。実機で 2 度踏んだ。
-- そのため最初のプロンプトは `agent prompt --wait --until working` で送る。`--wait` は送信後に状態変化を観測してから返るので、取りこぼしがタイムアウトとして露見する。失敗したら再送する（最大 3 回）。取りこぼしは何も残さないので再送しても二重入力にならない。
-- 既に同じリポジトリのワークスペースがある場合は、新規作成せずそれにフォーカスする（同じチェックアウトを二重に開くと、どちらで作業したか分からなくなる）。同じリポジトリを並行して開きたいときは git worktree を作ってそちらを開く。
-- `prefix+c` は素の `new_workspace` から明け渡した。リポジトリも claude も無い空のワークスペースを開きたい場面が実際には無かったので、よく使うほうを押しやすいキーに置いた。素のワークスペースが要るときは herdr 既定の `prefix+shift+n`。
-- **キー割当は `type = "pane"`（レイアウト内の一時ペイン）。`type = "popup"` は使えない。** popup はセッションモーダルで寿命がフォーカスに左右され、セットアップの途中でプロセスごと落ちる。実際に「ペインは 2 つあるが claude がいない」「claude は起動したが最初のプロンプトが届かない」を踏んだ。一時ペインなら寿命がコマンドに紐づく。なお `type = "pane"` は `width` / `height` を受け付けない（reload が `popup size on non-popup custom command` を返す）。
-- **セットアップが終わるまでフォーカスを動かさない。** 作成も分割も `--no-focus` で行い、フォーカスは最後にまとめて移す。フォーカス変更はこのスクリプトが動いている端末を畳んでしまうことがある。
-- **`herdr agent start` に渡すエージェント名はセッション内で一意でなければならない**（重複すると `agent_name_taken`）。`claude` 決め打ちだと 2 つ目で失敗するので、リポジトリ名を使う。
-- 一時ペインのタイトルは端末が報告する OSC 0 タイトルで付けている。`[[keys.command]]` に title 相当のキーは無い（`title` / `label` / `name` を試すと reload が `unknown config key` を返す）。
+- **claude の起動は `herdr pane run` で投げっぱなしにする。`herdr agent start` は使わない。** `agent start` は claude が入力を受け付けられる状態になるまで待ってから返るので 3 秒ブロックする。その待ちが要るのは「この後プロンプトを送る」場合だけ。送らないなら待つ理由が無い。`pane run` はコマンドを打って即座に返るので、claude はこちらが表示を切り替えた先で、目の前で起動する。
+- **セットアップが終わるまでフォーカスを動かさない。** 作成も分割も `--no-focus` で行い、フォーカスは最後の 1 回だけ。popup は寿命がフォーカスに左右され、途中でフォーカスが動くとプロセスごと落ちる。
+- 作りたてのペインはまだ zsh の起動処理を走らせている最中で、そこへ打ち込むと取りこぼす恐れがある。`pane process-info` を見て、シェルが自分自身の foreground process group になる（＝子プロセスを走らせていない）まで待つ。
+- popup のタイトルは端末が報告する OSC 0 タイトルで付けている。`[[keys.command]]` に title 相当のキーは無い（`title` / `label` / `name` を試すと reload が `unknown config key` を返す）。
 - コマンドが `zsh -ic`（対話シェル）なのは PATH のため。この環境の zsh 起動ファイルは `~/.zshrc` だけで `~/.zshenv` も `~/.zprofile` も無く、zsh は `.zshrc` を対話シェルでしか読まないので、`-lc`（ログイン・非対話）では `~/bin` に PATH が通らない。
+- `prefix+c` は素の `new_workspace` から明け渡した。リポジトリも claude も無い空のワークスペースを開きたい場面が実際には無かったので、よく使うほうを押しやすいキーに置いた。素のワークスペースが要るときは herdr 既定の `prefix+shift+n`。
 
+### 最初のプロンプトを送っていた版について
+かつては最初のプロンプト（既定 `hello`、引数で上書き可）を自動送信していた。**遅さが理由でやめた。**
 
+実測（合計 3.96 秒）:
+
+| 処理 | 所要 |
+| --- | --- |
+| `workspace create` | 0.02s |
+| `pane split` | 0.01s |
+| `wait_for_shell` | 0.23s |
+| `agent start`（claude が入力可能になるまで待つ） | 3.05s |
+| `agent prompt --wait`（着弾確認） | 0.63s |
+| `focus` | 0.01s |
+
+**3.68 秒（93%）が最初のプロンプトのための待ち時間**だった。プロンプトを送らない現行版は 0.3 秒で返る。数秒で打てる `hello` のために毎回 3.7 秒待つのは割に合わない、という判断。引数も廃止した（受け付けている限りプロンプト送信の経路が残り、バグの余地になるため）。
+
+あの版は消えていない。**PR [#153](https://github.com/onigomex/dotfiles/pull/153)、マージコミット `4ac03e2`** に入っている。丸ごと取り出すなら:
+
+```
+git show 4ac03e2:roles/herdr/bin/herdr-claude-workspace
+git show 4ac03e2:roles/herdr/.config/herdr/config.toml
+```
+
+あの版が解いていた問題（戻すなら必ず引き継ぐこと）:
+
+- `herdr agent start` に渡すエージェント名はセッション内で一意でなければならない（重複すると `agent_name_taken`）。`claude` 決め打ちは 2 つ目で失敗する
+- claude は起動直後の数秒（バナーや `Update available!` の描画中）に**エラーも出さず入力を取りこぼす**。`agent start` が返っても入力を受け取れる保証にはならない。`agent prompt --wait --until working` で着弾を確認し、落ちていたら再送する必要がある
+- `type = "popup"` は使えない。処理が数秒かかる版では、途中のフォーカス変更で popup ごと落ちる（`type = "pane"` にしていた）
 
 ## References
 - https://github.com/ogulcancelik/herdr
