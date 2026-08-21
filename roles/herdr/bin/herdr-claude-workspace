@@ -14,7 +14,6 @@
 set -eu
 
 readonly DEFAULT_PROMPT="hello"
-readonly AGENT_NAME="claude"
 readonly START_TIMEOUT_MS=60000
 
 usage() {
@@ -67,9 +66,9 @@ open_workspace() {
   local dir="$1" prompt="$2"
   local created workspace left
 
-  # Nothing here may move the focus until the very last step. When this runs from the
-  # herdr popup (prefix+c), focusing another workspace dismisses the popup and kills
-  # this script with it - which used to leave a workspace with panes but no claude.
+  # Nothing here may move the focus until the very last step. Focus changes can tear
+  # down the terminal this script is running in (a herdr popup dies outright), which
+  # used to leave a workspace with panes but no claude.
   created="$(herdr workspace create --cwd "$dir" --no-focus)"
   workspace="$(print -r -- "$created" | jq -r '.result.workspace.workspace_id')"
   left="$(print -r -- "$created" | jq -r '.result.root_pane.pane_id')"
@@ -79,7 +78,9 @@ open_workspace() {
   # 'agent start' returns once claude is actually accepting input, so the prompt below
   # never races the startup banner.
   print -r -- "herdr-claude-workspace: starting claude in ${dir:t} ..."
-  herdr agent start "$AGENT_NAME" --kind claude --pane "$left" --timeout "$START_TIMEOUT_MS" >/dev/null
+  # The agent name must be unique in the session (herdr answers agent_name_taken
+  # otherwise), so name it after the repository rather than hardcoding "claude".
+  herdr agent start "${dir:t}" --kind claude --pane "$left" --timeout "$START_TIMEOUT_MS" >/dev/null
   herdr agent prompt "$left" "$prompt" >/dev/null
 
   herdr workspace focus "$workspace" >/dev/null
@@ -93,7 +94,7 @@ main() {
 
   require herdr ghq fzf jq
 
-  # Name the terminal so the herdr popup shows what it is. [[keys.command]] has no
+  # Name the terminal so the temporary pane shows what it is. [[keys.command]] has no
   # title option (reload reports 'unknown config key keys.command.0.title'), so the
   # only handle is the OSC 0 title the terminal itself reports.
   print -n "\e]0;claude workspace\a"

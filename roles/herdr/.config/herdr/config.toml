@@ -33,16 +33,15 @@ switch_tab   = ""                # 当面無効（prefix+1..9 は switch_workspa
 # --- カスタムコマンド ---
 # prefix+c: fzf でリポジトリを選び、「左 claude（hello 送信済み）/ 右ターミナル」の
 # ワークスペースを開く。毎回手でやっていた一連の手順を 1 キーに畳んだもの。
-# type = "popup" はセッションモーダルの一時ペインなので、fzf の選択 UI をそのまま出せる。
+# type = "pane"（レイアウト内の一時ペイン）を使う。popup（セッションモーダル）だと
+# セットアップ中にプロセスごと落ちて、claude が起動しない／hello が届かない。
 # zsh -ic（対話シェル）なのは PATH（~/bin）を通すため。この環境の zsh 起動ファイルは
 # ~/.zshrc だけで、~/.zshenv も ~/.zprofile も無い。zsh は .zshrc を対話シェルでしか
 # 読まないので、-lc（ログイン・非対話）では ~/bin に PATH が通らず実行できない。
 [[keys.command]]
 key = "prefix+c"
-type = "popup"
+type = "pane"
 command = "zsh -ic herdr-claude-workspace"
-width = "60%"
-height = "60%"
 
 [experimental]
 pane_history = false

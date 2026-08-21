@@ -95,7 +95,7 @@ last_pane        = "prefix+semicolon"                  # 直前のペイン：tm
 いつもの手順（新規ワークスペース → `repo` でリポジトリ選択 → `claude` 起動 → `hello` と入力 → ペイン分割 → 右にターミナル）を 1 アクションに畳んだもの。
 
 ```
-prefix+c            # herdr 上（popup で fzf が開く）
+prefix+c            # herdr 上（一時ペインで fzf が開く）
 c                   # 素のターミナルから（alias）
 herdr-claude-workspace [prompt]
 ```
@@ -114,10 +114,12 @@ herdr-claude-workspace [prompt]
 - 実体を 1 文字の `c` にせず `herdr-claude-workspace` にしたのは、`help` や `~/bin` を見たときに何のコマンドか分かるようにするため。日常の打鍵は alias で短くする。
 - `herdr agent start` は claude が**入力を受け付けられる状態になるまで待ってから返る**ので、`sleep` で起動を待つ必要が無い。
 - 既に同じリポジトリのワークスペースがある場合は、新規作成せずそれにフォーカスする（同じチェックアウトを二重に開くと、どちらで作業したか分からなくなる）。同じリポジトリを並行して開きたいときは git worktree を作ってそちらを開く。
-- キー割当は `[[keys.command]]`（`type = "popup"` はセッションモーダルの一時ペイン）。`prefix+c` は素の `new_workspace` から明け渡した。リポジトリも claude も無い空のワークスペースを開きたい場面が実際には無かったので、よく使うほうを押しやすいキーに置いた。素のワークスペースが要るときは herdr 既定の `prefix+shift+n`。
-- **セットアップが終わるまでフォーカスを動かしてはいけない。** popup から実行しているとき、別のワークスペースにフォーカスを移すと popup が閉じ、実行中のスクリプトごと殺される。`workspace create --focus` にしていたときは、`agent start`（claude の起動待ちで数秒ブロックする）の途中で落ちて、「ペインは 2 つあるが claude がいない」ワークスペースが残った。作成も分割も `--no-focus` で行い、フォーカスは最後にまとめて移す。
-- popup のタイトルは端末が報告する OSC 0 タイトルで付けている。`[[keys.command]]` に title 相当のキーは無い（`title` / `label` / `name` を試すと reload が `unknown config key` を返す）。
-- popup のコマンドが `zsh -ic`（対話シェル）なのは PATH のため。この環境の zsh 起動ファイルは `~/.zshrc` だけで `~/.zshenv` も `~/.zprofile` も無く、zsh は `.zshrc` を対話シェルでしか読まないので、`-lc`（ログイン・非対話）では `~/bin` に PATH が通らない。
+- `prefix+c` は素の `new_workspace` から明け渡した。リポジトリも claude も無い空のワークスペースを開きたい場面が実際には無かったので、よく使うほうを押しやすいキーに置いた。素のワークスペースが要るときは herdr 既定の `prefix+shift+n`。
+- **キー割当は `type = "pane"`（レイアウト内の一時ペイン）。`type = "popup"` は使えない。** popup はセッションモーダルで寿命がフォーカスに左右され、セットアップの途中でプロセスごと落ちる。実際に「ペインは 2 つあるが claude がいない」「claude は起動したが最初のプロンプトが届かない」を踏んだ。一時ペインなら寿命がコマンドに紐づく。なお `type = "pane"` は `width` / `height` を受け付けない（reload が `popup size on non-popup custom command` を返す）。
+- **セットアップが終わるまでフォーカスを動かさない。** 作成も分割も `--no-focus` で行い、フォーカスは最後にまとめて移す。フォーカス変更はこのスクリプトが動いている端末を畳んでしまうことがある。
+- **`herdr agent start` に渡すエージェント名はセッション内で一意でなければならない**（重複すると `agent_name_taken`）。`claude` 決め打ちだと 2 つ目で失敗するので、リポジトリ名を使う。
+- 一時ペインのタイトルは端末が報告する OSC 0 タイトルで付けている。`[[keys.command]]` に title 相当のキーは無い（`title` / `label` / `name` を試すと reload が `unknown config key` を返す）。
+- コマンドが `zsh -ic`（対話シェル）なのは PATH のため。この環境の zsh 起動ファイルは `~/.zshrc` だけで `~/.zshenv` も `~/.zprofile` も無く、zsh は `.zshrc` を対話シェルでしか読まないので、`-lc`（ログイン・非対話）では `~/bin` に PATH が通らない。
 
 
 
