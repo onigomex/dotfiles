@@ -111,7 +111,8 @@ herdr-claude-workspace [prompt]   # 素のターミナルから
 ### 実装メモ
 - herdr の socket API（`herdr workspace create` / `pane split` / `agent start` / `agent prompt` / `agent focus`）を叩いているだけ。出力は JSON なので `jq` で `pane_id` を拾う。
 - 短い alias（`c`）は付けない。日常の入口は `prefix+c` で、コマンドを直に打つのは稀。名前を忘れたら `help` に載っている。
-- `herdr agent start` は claude が**入力を受け付けられる状態になるまで待ってから返る**ので、`sleep` で起動を待つ必要が無い。
+- `herdr agent start` は herdr が claude を対話状態と見なすまで待ってから返るので、`sleep` で起動を待つ必要は無い。ただし**それは次の入力が受け取られる保証ではない**。claude は起動直後の数秒（バナーや `Update available!` の描画中）に入力を取りこぼすことがあり、エラーも出ないまま入力欄が空のままになる。実機で 2 度踏んだ。
+- そのため最初のプロンプトは `agent prompt --wait --until working` で送る。`--wait` は送信後に状態変化を観測してから返るので、取りこぼしがタイムアウトとして露見する。失敗したら再送する（最大 3 回）。取りこぼしは何も残さないので再送しても二重入力にならない。
 - 既に同じリポジトリのワークスペースがある場合は、新規作成せずそれにフォーカスする（同じチェックアウトを二重に開くと、どちらで作業したか分からなくなる）。同じリポジトリを並行して開きたいときは git worktree を作ってそちらを開く。
 - `prefix+c` は素の `new_workspace` から明け渡した。リポジトリも claude も無い空のワークスペースを開きたい場面が実際には無かったので、よく使うほうを押しやすいキーに置いた。素のワークスペースが要るときは herdr 既定の `prefix+shift+n`。
 - **キー割当は `type = "pane"`（レイアウト内の一時ペイン）。`type = "popup"` は使えない。** popup はセッションモーダルで寿命がフォーカスに左右され、セットアップの途中でプロセスごと落ちる。実際に「ペインは 2 つあるが claude がいない」「claude は起動したが最初のプロンプトが届かない」を踏んだ。一時ペインなら寿命がコマンドに紐づく。なお `type = "pane"` は `width` / `height` を受け付けない（reload が `popup size on non-popup custom command` を返す）。
