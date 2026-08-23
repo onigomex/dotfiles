@@ -23,7 +23,7 @@ make create ROLE=<ROLE>
 雛形にはよくある導入方法がコメントで並んでいるので、該当するものを外して使う。
 
 - **冪等にする。** 何度流しても同じ結果になること。`brew list <name> > /dev/null 2>&1 || { brew install <name>; }` の形が基本
-- 設定ファイルは `cp -fr` で `${HOME}` へ配る。`.zsh.d/` に置くと `<ROLE>.zshrc.env`（環境変数）/ `.zshrc.alias`（alias）/ `.zshrc`（その他）として読まれる
+- 設定ファイルは `cp -fr` で `${HOME}` へ配る。`.zsh.d/` に置くと `<ROLE>.zshrc.env`（環境変数）/ `.zshrc.alias`（alias）/ `.zshrc`（その他）として読まれる。**雛形に `.zsh.d/` は含まれない**ので、必要なロールだけ自分で作る（要らないロールのほうが多い）
 - **更新のための仕組みは作らない。** 更新も install を流し直すことで行う（[ADR 0005](../../../docs/adr/0005-install-only-no-update-hook.md)）
 
 ### 3. `README.md` を書く
