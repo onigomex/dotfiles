@@ -90,6 +90,14 @@ make create ROLE=vim
 1. Add `<ROLE>` to `roles.lst`. Otherwise the role is not picked up by `make install` (without `ROLE=`). Removing a role requires deleting it from `roles.lst` too.
 
 
+### Diagnose the repository
+```
+make doctor
+```
+
+Checks the things that break silently: a role missing from `roles.lst`, a `README.md` whose second line (shown by `make list`) is empty or still `FIXME`, and a role without `install.sh`. Exits non-zero when it finds something. It only reads - nothing is changed.
+
+
 ### Update images
 ```
 % git fetch; git branch -a
