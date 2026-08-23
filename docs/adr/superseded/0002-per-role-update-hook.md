@@ -1,6 +1,6 @@
 # 0002. ロール個別の更新は make update ROLE=X（roles/X/update.sh フック）で行う
 
-- Status: Accepted
+- Status: Superseded by [ADR 0005](../0005-install-only-no-update-hook.md)
 - Date: 2026-08-05
 
 ## Context

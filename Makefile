@@ -15,7 +15,6 @@ help:
 	@echo "make create ROLE=vim"
 	@echo "make install ROLE=vim"
 	@echo "make install"
-	@echo "make update ROLE=hammerspoon"
 	@echo "make list"
 
 
@@ -27,11 +26,6 @@ create: ## Create ROLE <ROLE=RoleName>
 .PHONY: install
 install: ## Install ROLEs [ROLE=RoleName]
 	@scripts/install.sh $(ROLE)
-
-
-.PHONY: update
-update: ## Update ROLEs (run roles/<role>/update.sh if present) [ROLE=RoleName]
-	@scripts/update.sh $(ROLE)
 
 
 .PHONY: list
