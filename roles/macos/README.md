@@ -1,5 +1,4 @@
 # roles/macos
-
 macOS のシステム設定（GUI/System Settings 相当）を `defaults` 等で適用する role。
 
 

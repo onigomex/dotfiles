@@ -16,6 +16,7 @@ help:
 	@echo "make install ROLE=vim"
 	@echo "make install"
 	@echo "make list"
+	@echo "make doctor"
 
 
 .PHONY: create
@@ -31,4 +32,9 @@ install: ## Install ROLEs [ROLE=RoleName]
 .PHONY: list
 list: ## List ROLEs
 	@scripts/list.sh
+
+
+.PHONY: doctor
+doctor: ## Diagnose this repository for inconsistencies
+	@scripts/doctor.sh
 
