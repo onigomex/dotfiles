@@ -84,10 +84,9 @@ make create ROLE=vim
 ```
 
 1. Implement `roles/<ROLE>/install.sh` file.
-1. If you want to define environment variables, define it in the `roles/<ROLE>/.zsh.d/<ROLE>.zshrc.env` file.
-1. If you want to define alias, define it in the `roles/<ROLE>/.zsh.d/<ROLE>.zshrc.alias` file.
-1. If you want to define other processes, define it in the `roles/<ROLE>/.zsh.d/<ROLE>.zshrc` file.
+1. If the role needs zsh settings (environment variables, aliases, anything else), put them under `roles/<ROLE>/.zsh.d/`. Naming, load order and the pitfalls are documented in [docs/zsh-config.md](docs/zsh-config.md).
 1. Add `<ROLE>` to `roles.lst`. Otherwise the role is not picked up by `make install` (without `ROLE=`). Removing a role requires deleting it from `roles.lst` too.
+1. Run `make doctor`.
 
 
 ### Diagnose the repository
