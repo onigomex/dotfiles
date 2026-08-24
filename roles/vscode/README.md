@@ -1,5 +1,5 @@
 # roles/vscode
-Visual Studio Code is a code editor redefined and optimized for building and debugging modern web and cloud applications.
+GUI エディタ。設定を config/ から配る
 
 
 
@@ -34,6 +34,13 @@ Visual Studio Code is a code editor redefined and optimized for building and deb
     code --list-extensions | while read line; do echo '    '\"$line\",; done;
     echo '  ]\n}';
     ```
+
+
+
+## Usage
+GUI。`settings.json` と `keybindings.json` を `config/` から配る。
+
+**手動で必要なこと**: サインイン（Settings Sync を使う場合）と拡張機能の導入。拡張はこのロールでは管理していない。
 
 
 

@@ -1,5 +1,5 @@
 # roles/devbox
-Instant, easy, and predictable development environments
+プロジェクト単位で開発環境を宣言して切り替える
 
 - 独立した開発環境（複数可）を構築できる CLI ツール（Jetpack.io製）。
 - devbox shell で開発環境にアタッチできる。exit するれば元の環境に戻る。

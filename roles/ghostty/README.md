@@ -1,5 +1,5 @@
-# roles/ghosty
-Fast, native, feature-rich terminal emulator pushing modern features.
+# roles/ghostty
+常用ターミナル。設定は ~/.config/ghostty
 
 
 

@@ -1,5 +1,5 @@
 # roles/imagemagick
-ImageMagick® is a free and open-source software suite, used for editing and manipulating digital images. It can be used to create, edit, compose, or convert bitmap images, and supports a wide range of file formats, including JPEG, PNG, GIF, TIFF, and PDF.
+画像の変換・加工を CLI で。HEIC から JPEG などに使う
 
 
 

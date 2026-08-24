@@ -1,10 +1,18 @@
 # roles/ssh
-SSH とは、Secure Shell（セキュアシェル）の略称で、リモートコンピュータと通信するためのプロトコルです。
+~/.ssh の鍵をまとめて ssh-add するコマンドを配る
 
 
 
 ## Dependencies
 - gnu-cmds
+
+
+
+## Usage
+```
+ssh-add-keys          # ~/.ssh/*.pem を chmod 600 して ssh-add し、登録済みを一覧表示
+```
+鍵そのものはこのリポジトリでは管理しない（`~/.ssh` に自分で置く）。
 
 
 

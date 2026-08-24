@@ -1,5 +1,5 @@
 # roles/tmux
-Tmux is a terminal multiplexer
+ターミナル多重化。セッションを切らずに作業を続ける
 
 
 
@@ -190,6 +190,18 @@ set-window-option -g clock-mode-colour colour64 #green
 # bell
 set-window-option -g window-status-bell-style fg=colour235,bg=colour160 #base02, red
 ```
+
+
+
+## Usage
+```
+tmux                  # 新しいセッション
+tmux a                # 直前のセッションに戻る
+prefix r              # ~/.tmux.conf を再読込
+```
+prefix は `Ctrl+b`。コピーモードは vi キー（`v` で選択開始）。ペインサイズの変更は `tmux-resize-pane` コマンド。
+
+**常用は herdr に移っている。** こちらは設定ごと残してある。
 
 
 

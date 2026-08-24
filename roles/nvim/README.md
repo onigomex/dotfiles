@@ -1,5 +1,5 @@
 # roles/nvim
-neovim/neovim: Vim-fork focused on extensibility and usability
+常用エディタ。設定は Lua（~/.config/nvim）
 
 
 
