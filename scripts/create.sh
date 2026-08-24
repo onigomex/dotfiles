@@ -14,6 +14,9 @@ main() {
   fi;
 
   cp -pr ${CURRENT_PATH}/templates/create ${role_path}
+  # {{ROLE}} を置換するのは「この階層のファイルの中身」だけ。ファイル名もサブ
+  # ディレクトリも見ていないので、雛形はフラットに保つこと（.zsh.d/{{ROLE}}.zshrc を
+  # 置いていた頃は、ファイル名が未置換のまま残っていた）。
   # use BSD sed
   /usr/bin/sed -i '' -E -e "s/{{ROLE}}/${role}/g" ${role_path}/*
 
