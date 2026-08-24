@@ -1,5 +1,5 @@
 # roles/github-actions
-You can discover, create, and share actions to perform any job you'd like, including CI/CD, and combine actions in a completely customized workflow.
+GitHub Actions のワークフローを actionlint で検査する
 
 
 
@@ -41,6 +41,14 @@ jobs:
 - [actionlint playground](https://rhysd.github.io/actionlint/)
 - [GitHub Actions のワークフローをチェックする actionlint をつくった - はやくプログラムになりたい](https://rhysd.hatenablog.com/entry/2021/07/11/214313)
 - [actionlint v1.4 → v1.6 で実装した新機能の紹介 - はやくプログラムになりたい](https://rhysd.hatenablog.com/entry/2021/08/11/221044)
+
+
+
+## Usage
+```
+actionlint            # リポジトリ直下で実行。.github/workflows/* を検査する
+actionlint <file>     # ファイル単体
+```
 
 
 

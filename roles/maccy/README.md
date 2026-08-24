@@ -1,5 +1,5 @@
 # roles/maccy
-p0deje/Maccy: Lightweight clipboard manager for macOS
+クリップボード履歴。ピン留めで定型文も呼び出す
 
 
 
@@ -40,6 +40,13 @@ p0deje/Maccy: Lightweight clipboard manager for macOS
 
 ## System Settings
 - System Settings > Privacy & Security > Accessibility > Enable
+
+
+
+## Usage
+GUI。常駐してクリップボード履歴を持つ。ホットキーで履歴を開き、選んで貼る。
+
+よく使う定型文はピン留めしておくと履歴に流されない。**ファイル定義の定型文が欲しい場合は espanso の担当**（履歴とは別の道具）。
 
 
 

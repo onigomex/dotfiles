@@ -1,5 +1,5 @@
 # roles/zoxide
-ajeetdsouza/zoxide: A smarter cd command. Supports all major shells.
+よく行くディレクトリへ z で飛ぶ。cd の代替
 
 
 

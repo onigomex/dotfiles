@@ -1,5 +1,5 @@
 # roles/gh
-cli/cli: GitHub’s official command line tool
+GitHub の CLI。PR とリポジトリ操作をターミナルから
 
 
 
@@ -22,6 +22,17 @@ cli/cli: GitHub’s official command line tool
 [Account > Settings > Applications > Authorized OAuth Apps](https://github.com/settings/applications)
 
 - GiHub CLI
+
+
+
+## Usage
+```
+gh pr create          # PR を作る
+gh pr view --web      # ブラウザで開く
+gh pr list
+gh api repos/:owner/:repo/...   # API を直に叩く
+```
+**初回のサインイン（`gh auth login`）は手動。**
 
 
 

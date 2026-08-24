@@ -1,5 +1,5 @@
 # roles/zsh
-ZSH, also called the Z shell, is an extended version of the Bourne Shell (sh).
+ログインシェル本体と、.zshrc / .zsh.d の土台
 
 
 
@@ -8,6 +8,18 @@ ZSH, also called the Z shell, is an extended version of the Bourne Shell (sh).
 - git
 - ghq
 - gnu-cmds
+
+
+
+## Usage
+ログインシェル本体。
+
+```
+ll                    # ls -la
+precmd-on             # プロンプトにブランチとパスを出す
+precmd-off            # 止める
+```
+**ロールから zsh 設定を配る規約は [docs/zsh-config.md](../../docs/zsh-config.md) が正**（置き場所・命名・読み込み順・落とし穴）。
 
 
 

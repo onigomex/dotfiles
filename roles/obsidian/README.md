@@ -1,10 +1,17 @@
 # roles/obsidian
-Obsidian: Knowledge base that works on top of a local folder of plain text Markdown files
+ローカルの Markdown で知識を溜めるノートアプリ
 
 
 
 ## Dependencies
 - homebrew
+
+
+
+## Usage
+GUI。vault はローカルのプレーンな Markdown フォルダなので、他のエディタや `rg` からも触れる。
+
+**手動で必要なこと**: vault の場所の指定と、同期の設定。
 
 
 

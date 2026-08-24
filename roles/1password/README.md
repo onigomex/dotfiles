@@ -1,5 +1,5 @@
 # roles/1password
-1Password app. 1Password remembers all your passwords for you. It keeps your digital life secure and always available, safe behind the one password that only you know.
+パスワードと秘密鍵の保管庫。ブラウザや CLI から呼び出す
 
 
 

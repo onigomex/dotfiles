@@ -1,5 +1,5 @@
 # roles/macos
-macOS のシステム設定（GUI/System Settings 相当）を `defaults` 等で適用する role。
+macOS のシステム設定を defaults でコード化して適用する
 
 
 
@@ -58,6 +58,14 @@ GUI で設定 → 変化した plist を差分で特定 → `defaults write` に
 % defaults export <domain> after.plist    # 変更後
 % diff <(plutil -p before.plist) <(plutil -p after.plist)
 ```
+
+
+
+## Usage
+```
+make install ROLE=macos      # settings.d/*.sh をまとめて適用（冪等）
+```
+設定を足すときは `settings.d/` にスクリプトを増やす。反映に再ログインやアプリ再起動が要るものは各スクリプトのコメントに書いてある。
 
 
 

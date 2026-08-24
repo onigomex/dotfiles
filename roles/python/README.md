@@ -1,5 +1,5 @@
 # roles/python
-Python | uv で Python 本体・バージョン・パッケージ・仮想環境を一括管理する
+uv で Python 本体・版・パッケージ・仮想環境をまとめて管理
 
 
 

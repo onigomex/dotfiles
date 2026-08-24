@@ -1,5 +1,5 @@
 # roles/gron
-tomnomnom/gron: Make JSON greppable!
+JSON を 1 行 1 パスに展開して grep できるようにする
 
 
 

@@ -1,5 +1,5 @@
 # roles/hammerspoon
-Hammerspoon（Lua による macOS デスクトップ自動化）を導入し、設定（`.hammerspoon/`）を配布する role。
+Lua で macOS を自動化する。キー割当とスリープ防止に使う
 
 ## 依存
 - homebrew
@@ -34,6 +34,16 @@ Mac の自動スリープ（ディスプレイ／システム）を抑止する 
 
 ## 手動セットアップ手順（残る手作業）
 1. 初回起動後、`System Settings > Privacy & Security > Accessibility` で Hammerspoon を ON にする（上記の理由によりコード化不可）。
+
+## Usage
+常駐する。メニューバーのアイコンから Console と Reload Config を開ける。
+
+```
+hyper + F6            # Caffeine（スリープ防止）のトグル
+```
+設定を直したら Reload Config（`config/reload.lua` で自動リロードも入れている）。**Accessibility の許可は手動**（下記の理由によりコード化できない）。
+
+
 
 ## References
 - [Hammerspoon/hammerspoon: Staggeringly powerful macOS desktop automation with Lua](https://github.com/Hammerspoon/hammerspoon)

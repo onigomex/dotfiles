@@ -1,5 +1,5 @@
 # roles/git
-Git is a free and open source distributed version control system.
+git 本体と、グローバル設定（ignore / commit テンプレ / secrets）
 
 
 
@@ -52,6 +52,19 @@ Prevents you from committing secrets and credentials into git repositories
 > `$ git config --global init.defaultBranch main`
 
 - [Git - First-Time Git Setup > Your default branch name](https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup)
+
+
+
+## Usage
+自作コマンドが `~/bin` に入る（一覧は `help`）。
+
+```
+gci                   # commit id を fzf で選んで出力
+gbr                   # ブランチ一覧
+gpn                   # PR 番号
+gci-rebase            # rebase 用に「選んだ 1 つ前」の commit id
+```
+グローバル設定は `~/.config/git/` に置かれる（`.gitignore_global` / `.gitcommit_global` / git-secrets のフック）。`git commit` するとテンプレートが開く。
 
 
 

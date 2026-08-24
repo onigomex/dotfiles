@@ -1,5 +1,5 @@
 # roles/tig
-jonas/tig: Text-mode interface for git
+git のログと差分を TUI で追う
 
 
 
@@ -7,6 +7,15 @@ jonas/tig: Text-mode interface for git
 - homebrew
 - git
 - gh
+
+
+
+## Usage
+```
+tig                   # ログを追う。Enter で差分、q で戻る
+tig status            # git status の TUI 版。ここから add できる
+tig blame <file>      # 行ごとの由来
+```
 
 
 

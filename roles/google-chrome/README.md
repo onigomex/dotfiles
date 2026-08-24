@@ -1,5 +1,5 @@
 # roles/google-chrome
-Google Chrome - Google の高速で安全なブラウザ
+常用ブラウザ。拡張と 1Password 連携をここで使う
 
 
 
@@ -24,6 +24,13 @@ Google Chrome - Google の高速で安全なブラウザ
 
 ## Extensions
 See: https://github.com/onigomex/dotfiles/wiki/Chrome-Extensions
+
+
+
+## Usage
+GUI。日常のブラウジングと、1Password 拡張を使う。
+
+**手動で必要なこと**: デフォルトブラウザの設定、1Password 拡張の導入とサインイン。
 
 
 

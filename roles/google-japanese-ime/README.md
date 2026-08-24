@@ -1,5 +1,5 @@
 # roles/google-japanese-ime
-Google Japanese IME（Google 日本語入力）
+日本語入力。macOS 標準の IME の代わりに使う
 
 
 
@@ -23,6 +23,13 @@ System Settings > Keyboard > Text Input > Input Sources > Edit
 1. そうすると ABC が消せる。その後に Romaji も削除すると、Google 日本語入力のみにできる。
 
 ![](https://raw.githubusercontent.com/onigomex/dotfiles/images/roles/google-japanese-ime/ScreenShot-01.png)
+
+
+
+## Usage
+GUI（入力ソース）。英数と日本語の切り替えは Hammerspoon 側で割り当てている。
+
+**手動で必要なこと**: `System Settings > Keyboard > Input Sources` への追加と、標準 IME の削除。反映には再ログインが必要なことがある。
 
 
 
