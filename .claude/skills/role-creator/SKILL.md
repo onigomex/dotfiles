@@ -1,6 +1,6 @@
 ---
 name: role-creator
-description: このリポジトリ（onigomex/dotfiles）のロールを作る・直す手順。roles/<ROLE>/ を新規に追加する、既存ロールの README（一行説明・Usage・Dependencies・References）を書く／直す、roles.lst への登録を確認する場面で使う。「<ツール名> のロールを追加して」「このロールの README を書いて」「make list の説明を直して」のような依頼はもちろん、roles/ 配下を触ったら自分から適用する。
+description: このリポジトリ（onigomex/dotfiles）のロールを作る・直す手順。roles/<ROLE>/ を新規に追加する、既存ロールの README（一行説明・Usage・Dependencies・References）を書く／直す、roles.list への登録を確認する場面で使う。「<ツール名> のロールを追加して」「このロールの README を書いて」「make list の説明を直して」のような依頼はもちろん、roles/ 配下を触ったら自分から適用する。
 ---
 
 # ロールを作る・直す
@@ -50,7 +50,7 @@ make create ROLE=<ROLE>
 
 ロール固有の事情（手動で残る設定、コード化できない理由、設定項目の一覧など）があれば節を足してよい。`roles/hammerspoon/README.md` が参考になる。
 
-### 4. `roles.lst` に登録する
+### 4. `roles.list` に登録する
 **忘れると `make install`（`ROLE=` 無しの一括）の対象から静かに漏れる。** ロールを削除したときも同様に消す。
 
 ### 5. `archives/roles/` を確認する（新規作成のとき）
@@ -60,7 +60,7 @@ make create ROLE=<ROLE>
 ```
 make doctor
 ```
-`roles.lst` への登録漏れ、`README.md` の 2 行目が空／`FIXME` のまま、`install.sh` の欠落を見る。**`[OK]` が出るまで終わりにしない。**
+`roles.list` への登録漏れ、`README.md` の 2 行目が空／`FIXME` のまま、`install.sh` の欠落を見る。**`[OK]` が出るまで終わりにしない。**
 
 ### 7. 実際に流して確かめる
 ```
