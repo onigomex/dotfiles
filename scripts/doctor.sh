@@ -8,7 +8,7 @@
 set -u
 
 readonly ROLE_ROOT_PATH=roles
-DOTF_ROLES_FILE=${DOTF_ROLES_FILE:-roles.lst}
+DOTF_ROLES_FILE=${DOTF_ROLES_FILE:-roles.list}
 
 typeset -i problems=0
 
@@ -17,8 +17,8 @@ report() {
   (( problems++ ))
 }
 
-# roles/ にあるのに roles.lst に無いロールは、make install（一括）の対象から静かに
-# 漏れる。逆に roles.lst にあるのに roles/ に無いと、一括インストールが途中で失敗する。
+# roles/ にあるのに roles.list に無いロールは、make install（一括）の対象から静かに
+# 漏れる。逆に roles.list にあるのに roles/ に無いと、一括インストールが途中で失敗する。
 check_roles_list() {
   if [[ ! -f "$DOTF_ROLES_FILE" ]]; then
     report "$DOTF_ROLES_FILE が見つかりません。"

@@ -3,7 +3,7 @@ set -e
 
 readonly ROLE_ROOT_PATH=roles
 readonly INSTALL_SHELL=install.sh
-DOTF_ROLES_FILE=${DOTF_ROLES_FILE:-roles.lst}
+DOTF_ROLES_FILE=${DOTF_ROLES_FILE:-roles.list}
 
 
 timestamp() {

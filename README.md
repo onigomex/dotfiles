@@ -31,17 +31,17 @@ curl -fsSL https://raw.githubusercontent.com/onigomex/dotfiles/$DOTF_BRANCH/inst
 ```
 
 ### Specify a role file
-By default `roles.lst` (all roles) is installed. To install a subset, point `DOTF_ROLES_FILE` at your own list. The easiest way is to start from `roles.lst` and comment out (`#`) the roles you don't want.
+By default `roles.list` (all roles) is installed. To install a subset, point `DOTF_ROLES_FILE` at your own list. The easiest way is to start from `roles.list` and comment out (`#`) the roles you don't want.
 ```
-curl -fsSL https://raw.githubusercontent.com/onigomex/dotfiles/HEAD/roles.lst > roles.lst
-${EDITOR:-vim} roles.lst   # comment out unwanted roles with '#'
-export DOTF_ROLES_FILE="$(pwd)/roles.lst"
+curl -fsSL https://raw.githubusercontent.com/onigomex/dotfiles/HEAD/roles.list > roles.list
+${EDITOR:-vim} roles.list   # comment out unwanted roles with '#'
+export DOTF_ROLES_FILE="$(pwd)/roles.list"
 curl -fsSL https://raw.githubusercontent.com/onigomex/dotfiles/HEAD/install | zsh
 ```
 
 ### Create a role file and specify it
 ```
-export DOTF_ROLES_FILE=`pwd`/roles.txt
+export DOTF_ROLES_FILE=`pwd`/my-roles.list
 cat << EOF > $DOTF_ROLES_FILE
 fzf
 git
@@ -85,7 +85,7 @@ make create ROLE=vim
 
 1. Implement `roles/<ROLE>/install.sh` file.
 1. If the role needs zsh settings (environment variables, aliases, anything else), put them under `roles/<ROLE>/.zsh.d/`. Naming, load order and the pitfalls are documented in [docs/zsh-config.md](docs/zsh-config.md).
-1. Add `<ROLE>` to `roles.lst`. Otherwise the role is not picked up by `make install` (without `ROLE=`). Removing a role requires deleting it from `roles.lst` too.
+1. Add `<ROLE>` to `roles.list`. Otherwise the role is not picked up by `make install` (without `ROLE=`). Removing a role requires deleting it from `roles.list` too.
 1. Run `make doctor`.
 
 
@@ -94,7 +94,7 @@ make create ROLE=vim
 make doctor
 ```
 
-Checks the things that break silently: a role missing from `roles.lst`, a `README.md` whose second line (shown by `make list`) is empty or still `FIXME`, and a role without `install.sh`. Exits non-zero when it finds something. It only reads - nothing is changed.
+Checks the things that break silently: a role missing from `roles.list`, a `README.md` whose second line (shown by `make list`) is empty or still `FIXME`, and a role without `install.sh`. Exits non-zero when it finds something. It only reads - nothing is changed.
 
 
 ### Update images
