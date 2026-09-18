@@ -56,5 +56,6 @@ Chosen option:「update フックを廃止し、`SpoonInstall.spoon` の vendori
 - **SpoonInstall 本体を自分で改造する（フォークする）ことになったとき。** リポジトリの中に守るべき資産が生まれ、この決定の前提が変わるので vendoring に戻す。
 - `install` を流し直すだけでは更新できないロールが出てきたとき（update 相当の機構が再び必要になる）
 - 上流の master 破損で install が壊れる事故が繰り返し起きたとき（版のピン留めを諦めた前提を見直す）
+- 上流の公式 Spoons リポジトリがスプーン個別のリリースタグを打つようになったとき（「手動 bump しかない」という前提が消え、版指定での取得が選べるようになる）
 
 - [ADR 0002](superseded/0002-per-role-update-hook.md): 本 ADR が置き換えた、update フックの導入。

@@ -9,10 +9,11 @@ date: 2026-08-05
 
 Claude の skill-creator 同梱スクリプトが `str | None` 記法を使い Python 3.10+ を要求するが、macOS のシステム Python は 3.9.6 で、uv / pyenv / brew python はいずれも未導入だった。
 
-dotfiles として Python を入れるにあたり、満たすべき制約が 2 つある。
+dotfiles として Python を入れるにあたり、満たすべき制約が 3 つある。
 
 - **再現可能であること**（まっさらな mac に流して同じ状態になる）
 - **バージョンを管理できること**（必須要件）
+- **導入経路は homebrew に寄せること**（このリポジトリの「macOS 設定は brew 継続」方針）
 
 調査の結果、現行の候補は uv（Python 専用・Rust 製・pip/venv/pyenv/pipx を統合）と mise（多言語バージョンマネージャ）の 2 つに絞られた。pyenv / asdf は旧世代、homebrew の `python@x` はバージョン管理の要件を満たさない。
 
@@ -52,4 +53,4 @@ Chosen option:「uv に一本化する」。理由は、Python の導入・バ�
 
 - Node / Ruby など Python 以外のバージョン管理が必要になり、mise 等をこのリポジトリに入れたとき（決定 5 の「Python は uv のまま据え置く」を再確認する）
 - uv の開発が止まる、または上流が Python の導入方法として推奨しなくなったとき
-- homebrew で uv が配布されなくなったとき（決定 3 の導入経路が使えなくなる）
+- homebrew で uv が配布されなくなったとき、またはこのリポジトリが brew 中心の導入をやめたとき（決定 3 が依拠する「導入経路は homebrew に寄せる」制約が外れる）
