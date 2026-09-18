@@ -9,7 +9,7 @@ description: このリポジトリ（onigomex/dotfiles）のロールを作る�
 
 新規作成でも既存ロールの手直しでも同じ手順を使う。**入口はどちらでもよい** —— `roles/<ROLE>/` がまだ無ければ作るところから、既にあればその先から始める。
 
-このリポジトリは AI 無しで動くことを要件にしている（[ADR 0007](../../../docs/adr/0007-no-dependency-on-installed-tools.md)）。だからこの手順は**人が読んでも同じことができる形**で書いてある。ツールに AI を組み込まない代わりに、ここに置いている。
+このリポジトリは AI 無しで動くことを要件にしている（[ADR 0006](../../../docs/adr/0006-tool-works-without-ai.md)）。だからこの手順は**人が読んでも同じことができる形**で書いてある。ツールに AI を組み込まない代わりに、ここに置いている。
 
 ## 手順
 
@@ -70,7 +70,7 @@ make install ROLE=<ROLE>
 
 ## やらないこと
 
-- **セットアップが依存してよいのは mac の初期状態と homebrew だけ。** `claude` をはじめ、このリポジトリが入れるツールを `Makefile` / `scripts/` / `roles/*/install.sh` から呼ばない（自分の `install.sh` で入れたものを同じ中で使うのは可）（[ADR 0007](../../../docs/adr/0007-no-dependency-on-installed-tools.md)）
+- **`make` から `claude` を呼ばない。** このツールは mac の初期状態から流す前提で、`claude` はこのツールが入れる対象の 1 つ。ツールが AI に依存すると循環する（[ADR 0006](../../../docs/adr/0006-tool-works-without-ai.md)）
 - **`update.sh` を作らない。** 更新は install を流し直す（[ADR 0005](../../../docs/adr/0005-install-only-no-update-hook.md)）
 - **上流の成果物を repo に同梱（vendor）しない。** 設定は自分の側に持ち、本体は install 時に取得する。同梱するのは、自分で改造していて repo の中に資産がある場合だけ
 
