@@ -7,7 +7,7 @@
 
 | # | タイトル | date |
 | --- | --- | --- |
-| [0007](0007-no-ai-in-setup-path.md) | 出力が揺れる AI はセットアップの実行経路から呼ばず、AI にやらせたい作業はリポジトリ内のスキルに置く | 2026-09-19 |
+| [0007](0007-deterministic-setup-path.md) | セットアップの実行経路には出力が決定的なものだけを置き、AI にやらせたい作業はリポジトリ内のスキルに置く | 2026-09-19 |
 | [0005](0005-install-only-no-update-hook.md) | update フックを廃止し、更新も make install に一本化する | 2026-08-23 |
 | [0003](0003-global-gitignore-work-dir.md) | `_work/` はグローバル gitignore で直下のみ無視し、各リポジトリの .gitignore にも残す | 2026-08-21 |
 | [0001](0001-python-management-with-uv.md) | Python 管理は uv に一本化し、role は実装名ではなく python と名づける | 2026-08-05 |

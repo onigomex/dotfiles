@@ -1,5 +1,5 @@
 ---
-status: "superseded by 0007-no-ai-in-setup-path.md"
+status: "superseded by 0007-deterministic-setup-path.md"
 date: 2026-08-23
 ---
 
