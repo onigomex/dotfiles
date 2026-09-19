@@ -1,8 +1,14 @@
-# ロールから zsh 設定を配る（`.zsh.d`）
+# role zsh spec
 
-ロールが zsh の設定（環境変数・alias・その他）を持ちたいときの置き場所と規約。**正はこの文書**。実装は `scripts/install.sh` の `_source_role_zshrc` と `roles/zsh/.zshrc`。
+zsh role の仕様。**正はこの文書。** zsh role が提供する仕組みが増えたら、ここに見出し 2 を足す（`docs/README.md` の規則）。
 
-## 置き場所と命名
+## `.zsh.d` の仕様
+
+ロールが zsh の設定（環境変数・alias・その他）を持ちたいときの置き場所と規約。
+
+**`.zsh.d` は zsh role が用意しているインターフェース**で、他のロールはそこに設定を置く。読み込む口は `roles/zsh/.zshrc`、各ロールのファイルを連結するのは共通基盤の `scripts/install.sh`（`_source_role_zshrc`）。
+
+### 置き場所と命名
 
 `roles/<ROLE>/.zsh.d/` に置き、そのロールの `install.sh` が `${HOME}` へ配る。
 
@@ -25,7 +31,7 @@ cp -fr .zsh.d ${HOME}
 
 `.zsh.d/` は雛形（`make create`）に含まれない。zsh 設定を持たないロールのほうが多いので、必要なロールだけ自分で作る。
 
-## どう読み込まれるか
+### どう読み込まれるか
 
 `make install` が `~/.zsh.d/` の中身を**この順で 1 つのファイルに連結**し、`zcompile` する。
 
@@ -43,14 +49,14 @@ test -r ~/.zsh.d/.zshrc && source ~/.zsh.d/.zshrc
 
 **同じ種類の中での順序はロール名のアルファベット順**（`*.zshrc.env` のグロブ展開順）。ロール間の読み込み順に依存する書き方をしないこと。依存があるなら 1 つのファイルにまとめる。
 
-## 落とし穴
+### 落とし穴
 
-### そのロールの設定は、同じ `make install` の中では有効にならない
+#### そのロールの設定は、同じ `make install` の中では有効にならない
 連結と `source` は、各ロールの `install.sh` を実行する**前**に走る（`scripts/install.sh` の `_individual`）。だから新しく置いた alias が使えるのは、次の `make install` かシェルを開き直してから。
 
 これは意図的な順序で、`roles/git` の `install.sh` が前回の実行で書き出した `git.zshrc.env`（`GIT_USERNAME` / `GIT_EMAIL`）を読み直すために必要になっている。
 
-### ファイルを削除しても再生成されない
+#### ファイルを削除しても再生成されない
 再生成の条件は「`~/.zsh.d/.zshrc` が無い」か「`*.zshrc{,.env,.alias}` のうち最新のものが `.zshrc` より新しい」。**削除は他のファイルの mtime を変えないので、条件を満たさない。** 消したはずの alias が生き残る。
 
 設定ファイルを消したときは、生成物も消してから流し直す。
@@ -60,11 +66,11 @@ rm -f ~/.zsh.d/{.zshrc,.zshrc.zwc}
 make install ROLE=<ROLE>
 ```
 
-## `~/.zsh.d/completion`
+### `~/.zsh.d/completion`
 
 `fpath` に追加される補完関数の置き場（`roles/zsh/.zshrc` が `fpath+=~/.zsh.d/completion`）。中身は `zsh-completion` コマンドが Homebrew の `site-functions` からシンボリックリンクを張って集める。**ロールが直接ファイルを置く場所ではない。**
 
-## References
+### References
 - `scripts/install.sh` の `_source_role_zshrc`（連結・`zcompile`・`source`）
 - `roles/zsh/.zshrc`（`~/.zsh.d/.zshrc` と `completion` の読み込み）
 - `roles/zsh/bin/zsh-completion`（補完関数の収集）
