@@ -1,5 +1,5 @@
 ---
-status: accepted
+status: "superseded by 0007-no-ai-in-setup-path.md"
 date: 2026-08-23
 ---
 
@@ -40,7 +40,7 @@ Chosen option:「`make` は AI 無しで完結させ、AI 用の手順はこの�
 ### Consequences
 
 * Good, because `make` だけで使う場合の体験は今までどおり。AI はあれば質が上がる、無くても困らない、という位置づけになる。
-* Bad, because 機械判定に寄せるぶん `make` のターゲットは増えうる。増やすときは「覚えるコマンドを増やさない」方針（[ADR 0005](0005-install-only-no-update-hook.md)）と衝突しないか毎回見る。
+* Bad, because 機械判定に寄せるぶん `make` のターゲットは増えうる。増やすときは「覚えるコマンドを増やさない」方針（[ADR 0005](../0005-install-only-no-update-hook.md)）と衝突しないか毎回見る。
 * Neutral, because スキルが増えると `.claude/skills/` がこのリポジトリの一部として育つ。個人の Claude 設定（onigomex/claude）とは役割が別なので、混ぜない。
 
 ## More Information
@@ -48,7 +48,7 @@ Chosen option:「`make` は AI 無しで完結させ、AI 用の手順はこの�
 ### Review Trigger (local)
 
 - **`curl` → `install.sh` → `make install` でまっさらな mac を立ち上げる、という使い方をやめたとき。** この制約はその 1 本道を守るためだけにあるので、前提が消えれば決定ごと不要になる。**`claude` が mac に最初から入るようになっただけでは発火しない**——AI を分けているのは導入順の問題だけでなく、AI を挟むと同じ入力でも出力が揺れて install の結果が再現しなくなるため。
-- `make` のターゲットを増やす提案が出て、「覚えるコマンドを増やさない」方針（[ADR 0005](0005-install-only-no-update-hook.md)）と実際に衝突したとき（決定 3 を見直す）
+- `make` のターゲットを増やす提案が出て、「覚えるコマンドを増やさない」方針（[ADR 0005](../0005-install-only-no-update-hook.md)）と実際に衝突したとき（決定 3 を見直す）
 - `.claude/skills/` の手順に、人が手でなぞれない記述（AI にしか実行できない指示）が入ったとき（決定 2 の「AI 用の指示書がそのまま人間用の手順書になる」という前提が崩れる）
 
-- [ADR 0005](0005-install-only-no-update-hook.md): 覚えるコマンドを増やさないために update を廃止した決定。ターゲットを増やすときはこれと突き合わせる。
+- [ADR 0005](../0005-install-only-no-update-hook.md): 覚えるコマンドを増やさないために update を廃止した決定。ターゲットを増やすときはこれと突き合わせる。
