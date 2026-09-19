@@ -19,7 +19,7 @@ ll                    # ls -la
 precmd-on             # プロンプトにブランチとパスを出す
 precmd-off            # 止める
 ```
-**ロールから zsh 設定を配る規約は [docs/zsh-config.md](../../docs/zsh-config.md) が正**（置き場所・命名・読み込み順・落とし穴）。
+**ロールから zsh 設定を配る規約は [docs/role-zsh-spec.md](../../docs/role-zsh-spec.md) が正**（置き場所・命名・読み込み順・落とし穴）。
 
 
 
