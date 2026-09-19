@@ -9,6 +9,7 @@ set -u
 
 readonly ROLE_ROOT_PATH=roles
 DOTF_ROLES_FILE=${DOTF_ROLES_FILE:-roles.list}
+readonly ADR_ROOT_PATH=docs/adr
 
 typeset -i problems=0
 
@@ -68,10 +69,46 @@ check_role_install() {
   done
 }
 
+# docs/adr/ 直下は現行の決定、README.md はその索引。片方だけ増えると「現行の決定が
+# 索引から漏れる」「索引のリンクが切れる」という形で静かに壊れる。次に採る番号も索引の
+# 先頭行から数えるので、ズレると採番を間違える。
+check_adr_index() {
+  [[ -d "$ADR_ROOT_PATH" ]] || return
+
+  local index="${ADR_ROOT_PATH}/README.md"
+  if [[ ! -f "$index" ]]; then
+    report "${index} がありません（ADR の索引。次に採る番号が分からなくなります）。"
+    return
+  fi
+
+  local -a present linked superseded
+  present=(${(f)"$(ls "$ADR_ROOT_PATH" | grep -E '^[0-9]{4}-.+\.md$' | sort)"})
+  linked=(${(f)"$(grep -oE '\([0-9]{4}-[^)]+\.md\)' "$index" | tr -d '()' | sort -u)"})
+  superseded=(${(f)"$(ls "${ADR_ROOT_PATH}/superseded" 2>/dev/null | grep -E '^[0-9]{4}-.+\.md$' | sort)"})
+
+  local adr
+  for adr in ${present}; do
+    [[ -n "$adr" ]] || continue
+    (( ${linked[(Ie)$adr]} )) || report "${ADR_ROOT_PATH}/${adr} が索引（README.md）の表にありません。"
+  done
+  for adr in ${linked}; do
+    [[ -n "$adr" ]] || continue
+    [[ -f "${ADR_ROOT_PATH}/${adr}" ]] \
+      || report "索引（README.md）が指す ${adr} が ${ADR_ROOT_PATH}/ にありません。"
+  done
+
+  # 索引に載るのは現行の決定だけ。superseded が残っていると、失効した決定が現行として読まれる。
+  for adr in ${superseded}; do
+    [[ -n "$adr" ]] || continue
+    (( ${linked[(Ie)$adr]} )) && report "${adr} は superseded ですが索引（README.md）の表に残っています。"
+  done
+}
+
 main() {
   check_roles_list
   check_role_readme
   check_role_install
+  check_adr_index
 
   if (( problems > 0 )); then
     print -r -- ""
