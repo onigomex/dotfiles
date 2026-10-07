@@ -11,8 +11,10 @@ readonly ROLE_ROOT_PATH=roles
 DOTF_ROLES_FILE=${DOTF_ROLES_FILE:-roles.list}
 readonly ADR_ROOT_PATH=docs/adr
 # 非現行の ADR の置き場。名前は adr スキルのローカル規約 3 が決めているので、規約が
-# 変わればここだけ直す。関数の中に直書きすると、改名時に検査が黙って無効になる
-# （下の ls は 2>/dev/null で失敗を捨てるため、空配列になってループが回らないだけで [OK] が出る）。
+# 変わればここだけ直す。関数の中に直書きすると、改名時に下の check_adr_index の
+# 3 つ目の検査だけが黙って無効になる（ls が 2>/dev/null で失敗を捨てるため、空配列に
+# なってループが回らない）。たいていは 2 つ目の検査が拾うが、直下と archives/ の両方に
+# 同じファイルがある状態（move ではなく copy した）は 3 つ目しか拾えず、[OK] が出る。
 readonly ADR_ARCHIVE_DIR=archives
 
 typeset -i problems=0
