@@ -32,30 +32,30 @@ ADR 0002 で `make update ROLE=X`（`roles/X/update.sh` フック）を新設し
 
 Chosen option:「update フックを廃止し、`SpoonInstall.spoon` の vendoring もやめる」。理由は 2 つ。
 
-- **update フックを廃止する理由**: 3 週間で 1 ロールしか使わなかった機構に、コマンドを 1 つ覚えるコストを払い続ける意味が無い。「どこに update があるか」を確認したくなる（`make list --update` のような機能が欲しくなる）のも、機構があるからこそ生じる負担で、廃止すればまとめて消える。
-- **vendoring をやめる理由**: vendoring は版をピン留めして復元可能にするための手段だが、`.spoon` の中に守るべき資産が無い（設定は config 側にある）。復元したいものは既に別で管理されている。加えて他の Spoon は実行時取得でピン留めしていないので、SpoonInstall だけ固定しても全体としての再現性は得られない。
+- update フックを廃止する理由: 3 週間で 1 ロールしか使わなかった機構に、コマンドを 1 つ覚えるコストを払い続ける意味が無い。「どこに update があるか」を確認したくなる（`make list --update` のような機能が欲しくなる）のも、機構があるからこそ生じる負担で、廃止すればまとめて消える。
+- vendoring をやめる理由: vendoring は版をピン留めして復元可能にするための手段だが、`.spoon` の中に守るべき資産が無い（設定は config 側にある）。復元したいものは既に別で管理されている。加えて他の Spoon は実行時取得でピン留めしていないので、SpoonInstall だけ固定しても全体としての再現性は得られない。
 
 具体的にはこう決める。
 
 1. `make update` / `scripts/update.sh` / `roles/*/update.sh` を廃止する。ロールの入口は `make install` だけにし、更新も install を流し直すことで行う。
 2. `SpoonInstall.spoon` の vendoring をやめ、`roles/hammerspoon/install.sh` が上流から取得する。リポジトリからは `roles/hammerspoon/.hammerspoon/Spoons/` を丸ごと削除し、install は毎回上流の最新に揃える。
 
-却下した案は 2 つ。「**vendoring を続け、更新は手動と割り切って README に書く**」は、README に書いた手順を思い出すコストが残るだけで、ADR 0002 の負担が形を変えて残る。「**vendoring を続け、install 時に最新かどうかチェックしてログに出す**」は、守るべき資産が無いのに毎回ネットワークアクセスと出力ノイズが増える——ピン留めの価値が無い以上、差分を知っても何もしない。
+却下した案は 2 つ。「vendoring を続け、更新は手動と割り切って README に書く」は、README に書いた手順を思い出すコストが残るだけで、ADR 0002 の負担が形を変えて残る。「vendoring を続け、install 時に最新かどうかチェックしてログに出す」は、守るべき資産が無いのに毎回ネットワークアクセスと出力ノイズが増える——ピン留めの価値が無い以上、差分を知っても何もしない。
 
 ### Consequences
 
 * Good, because 覚えるのは `make install` / `make list` / `make create` の 3 つだけになる。
-* Bad, because 上流の master が壊れると install も壊れ、どの版で壊れたかを git 履歴から辿れない。**これは受け入れる。** 壊れたらそこだけ手で直すか、まっさらから流し直す運用にする。
+* Bad, because 上流の master が壊れると install も壊れ、どの版で壊れたかを git 履歴から辿れない。これは受け入れる。壊れたらそこだけ手で直すか、まっさらから流し直す運用にする。
 * Neutral, because `install.sh` は毎回ネットワークから SpoonInstall を取得する（brew も同様なので、install に通信が要る前提は変わらない）。
 * Neutral, because `tar -C` は展開先ディレクトリを作らない（実測: `could not chdir` で終了）ため `mkdir -p` が必要。また展開前に `SpoonInstall.spoon` だけを削る（`Spoons/` ごと消すと実行時取得した他の Spoon を巻き添えにする）。
 
 ## More Information
 
-### Review Trigger (local)
+### Review Trigger
 
-- **SpoonInstall 本体を自分で改造する（フォークする）ことになったとき。** リポジトリの中に守るべき資産が生まれ、この決定の前提が変わるので vendoring に戻す。
+- SpoonInstall 本体を自分で改造する（フォークする）ことになったとき。リポジトリの中に守るべき資産が生まれ、この決定の前提が変わるので vendoring に戻す。
 - `install` を流し直すだけでは更新できないロールが出てきたとき（update 相当の機構が再び必要になる）
 - 上流の master 破損で install が壊れる事故が繰り返し起きたとき（版のピン留めを諦めた前提を見直す）
 - 上流の公式 Spoons リポジトリがスプーン個別のリリースタグを打つようになったとき（「手動 bump しかない」という前提が消え、版指定での取得が選べるようになる）
 
-- [ADR 0002](superseded/0002-per-role-update-hook.md): 本 ADR が置き換えた、update フックの導入。
+- [ADR 0002](archives/0002-per-role-update-hook.md): 本 ADR が置き換えた、update フックの導入。
