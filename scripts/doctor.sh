@@ -10,6 +10,10 @@ set -u
 readonly ROLE_ROOT_PATH=roles
 DOTF_ROLES_FILE=${DOTF_ROLES_FILE:-roles.list}
 readonly ADR_ROOT_PATH=docs/adr
+# 非現行の ADR の置き場。名前は adr スキルのローカル規約 3 が決めているので、規約が
+# 変わればここだけ直す。関数の中に直書きすると、改名時に検査が黙って無効になる
+# （下の ls は 2>/dev/null で失敗を捨てるため、空配列になってループが回らないだけで [OK] が出る）。
+readonly ADR_ARCHIVE_DIR=archives
 
 typeset -i problems=0
 
@@ -81,10 +85,10 @@ check_adr_index() {
     return
   fi
 
-  local -a present linked superseded
+  local -a present linked archived
   present=(${(f)"$(ls "$ADR_ROOT_PATH" | grep -E '^[0-9]{4}-.+\.md$' | sort)"})
   linked=(${(f)"$(grep -oE '\([0-9]{4}-[^)]+\.md\)' "$index" | tr -d '()' | sort -u)"})
-  superseded=(${(f)"$(ls "${ADR_ROOT_PATH}/superseded" 2>/dev/null | grep -E '^[0-9]{4}-.+\.md$' | sort)"})
+  archived=(${(f)"$(ls "${ADR_ROOT_PATH}/${ADR_ARCHIVE_DIR}" 2>/dev/null | grep -E '^[0-9]{4}-.+\.md$' | sort)"})
 
   local adr
   for adr in ${present}; do
@@ -97,10 +101,10 @@ check_adr_index() {
       || report "索引（README.md）が指す ${adr} が ${ADR_ROOT_PATH}/ にありません。"
   done
 
-  # 索引に載るのは現行の決定だけ。superseded が残っていると、失効した決定が現行として読まれる。
-  for adr in ${superseded}; do
+  # 索引に載るのは現行の決定だけ。非現行のものが残っていると、失効した決定が現行として読まれる。
+  for adr in ${archived}; do
     [[ -n "$adr" ]] || continue
-    (( ${linked[(Ie)$adr]} )) && report "${adr} は superseded ですが索引（README.md）の表に残っています。"
+    (( ${linked[(Ie)$adr]} )) && report "${adr} は ${ADR_ARCHIVE_DIR}/ にありますが索引（README.md）の表に残っています。"
   done
 }
 

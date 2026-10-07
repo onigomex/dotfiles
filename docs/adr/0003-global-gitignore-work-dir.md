@@ -43,7 +43,7 @@ Chosen option:「グローバル gitignore に `/_work/`（直下のみ）を入
 
 ## More Information
 
-### Review Trigger (local)
+### Review Trigger
 
 - ネストした `_work/`（`sub/_work/` など）を無視したいリポジトリが出てきたとき（直下限定という決定を見直す）
 - リポジトリ直下に実体として `_work/` を持つリポジトリが出てきて、グローバルの無視が邪魔になったとき（直下限定でも避けきれない範囲の広さが顕在化する）

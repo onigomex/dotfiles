@@ -49,7 +49,7 @@ Chosen option:「uv に一本化する」。理由は、Python の導入・バ�
 
 ## More Information
 
-### Review Trigger (local)
+### Review Trigger
 
 - Node / Ruby など Python 以外のバージョン管理が必要になり、mise 等をこのリポジトリに入れたとき（決定 5 の「Python は uv のまま据え置く」を再確認する）
 - uv の開発が止まる、または上流が Python の導入方法として推奨しなくなったとき
