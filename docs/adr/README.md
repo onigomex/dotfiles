@@ -1,9 +1,9 @@
 # ADR 索引
 
-このリポジトリの意思決定の記録（Architecture Decision Record）。**MADR 4.0.0 準拠。** 書き方は `adr` スキルに従う。
+このリポジトリの意思決定の記録（Architecture Decision Record）。MADR 4.0.0 準拠。書き方は `adr` スキルに従う。
 
-- **直下にあるのが現行の決定。** 効力を失ったものは `archives/` へ移してある。作業前の確認はこの表を見るだけでよい。
-- **次に採る番号は、下の表の先頭行 + 1。** 過去の番号は再利用しない。
+- 直下にあるのが現行の決定。効力を失ったものは `archives/` へ移してある。作業前の確認はこの表を見るだけでよい。
+- 次に採る番号は、下の表の先頭行 + 1。過去の番号は再利用しない。
 
 | # | タイトル | date |
 | --- | --- | --- |
@@ -14,6 +14,6 @@
 
 ## 欠番
 
-- **0002** — [`archives/0002-per-role-update-hook.md`](archives/0002-per-role-update-hook.md)。0005 に置き換えられた。
-- **0004** — 一度も使われていない（0003 の次に 0005 を採番した）。再利用しない。
-- **0006** — [`archives/0006-tool-works-without-ai.md`](archives/0006-tool-works-without-ai.md)。0007 に置き換えられた。
+- 0002 — [`archives/0002-per-role-update-hook.md`](archives/0002-per-role-update-hook.md)。0005 に置き換えられた。
+- 0004 — 一度も使われていない（0003 の次に 0005 を採番した）。再利用しない。
+- 0006 — [`archives/0006-tool-works-without-ai.md`](archives/0006-tool-works-without-ai.md)。0007 に置き換えられた。
