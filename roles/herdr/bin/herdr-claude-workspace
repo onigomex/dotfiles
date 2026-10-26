@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 # herdr-claude-workspace - pick a repository and open a herdr workspace laid out for work:
-# claude on the left, a plain terminal on the right.
+# a plain terminal on the left, claude on the right.
 #
 # Deliberately minimal: it opens the workspace and gets out of the way. It does not send
 # a first prompt and takes no arguments - type whatever you want once the workspace is up.
@@ -17,14 +17,17 @@
 set -eu
 
 readonly SHELL_READY_TIMEOUT_MS=10000
+# Share of the width given to the left (terminal) pane. Not 0.5: the terminal side gets
+# a few extra columns, matching the split that was tuned by hand in daily use.
+readonly LEFT_RATIO=0.518
 
 usage() {
   cat <<EOF
 Usage: herdr-claude-workspace
 
 Pick a ghq repository with fzf and open a herdr workspace for it:
-  * left pane  ... claude
-  * right pane ... a plain terminal in the same directory
+  * left pane  ... a plain terminal
+  * right pane ... claude in the same directory
 
 Takes no arguments. Type your first prompt yourself once claude is up.
 
@@ -81,7 +84,7 @@ find_workspace() {
 
 open_workspace() {
   local dir="$1"
-  local created workspace left
+  local created workspace left right
 
   # Nothing here may move the focus until the very last step. Focus changes tear down
   # the popup this script runs in, and anything left undone would be lost with it.
@@ -89,12 +92,13 @@ open_workspace() {
   workspace="$(print -r -- "$created" | jq -r '.result.workspace.workspace_id')"
   left="$(print -r -- "$created" | jq -r '.result.root_pane.pane_id')"
 
-  herdr pane split "$left" --direction right --ratio 0.5 --cwd "$dir" --no-focus >/dev/null
+  right="$(herdr pane split "$left" --direction right --ratio "$LEFT_RATIO" --cwd "$dir" --no-focus \
+    | jq -r '.result.pane.pane_id')"
 
   # 'pane run' just types the command and returns; claude boots in the workspace we are
   # about to focus, in full view, instead of behind a popup you have to wait on.
-  wait_for_shell "$left"
-  herdr pane run "$left" claude >/dev/null
+  wait_for_shell "$right"
+  herdr pane run "$right" claude >/dev/null
 
   herdr workspace focus "$workspace" >/dev/null
 }
