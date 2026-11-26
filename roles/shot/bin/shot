@@ -8,12 +8,13 @@ readonly DEST_DIR=${ONIGOMEX_SHOT_DEST_DIR:-_work}
 
 usage() {
 cat << EOF
-Usage: shot [last | -h | --help]
+Usage: shot [last | open | -h | --help]
 
 スクリーンショットを作業フォルダへ mv する。
 
   shot        新しい順に fzf で並べ、選んだものを移す(Tab で複数選べる)
   shot last   一番新しい 1 枚を移す
+  shot open   移す元のフォルダを Finder で開く(画像を見て選ぶとき)
   shot -h     このヘルプを出す
 
 環境変数:
@@ -35,6 +36,7 @@ move() {
 main() {
   case $1 in
     -h|--help) usage; return 0 ;;
+    open) open -- "$SRC_DIR"; return ;;
     ''|last) ;;
     *) usage >&2; return 1 ;;
   esac
