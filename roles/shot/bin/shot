@@ -12,7 +12,7 @@ Usage: shot [last | open | -h | --help]
 
 スクリーンショットを作業フォルダへ mv する。
 
-  shot        新しい順に fzf で並べ、選んだものを移す(Tab で複数選べる)
+  shot        新しい順に fzf で並べ、選んだものを移す(Tab で複数選べる。右に画像のプレビュー)
   shot last   一番新しい 1 枚を移す
   shot open   移す元のフォルダを Finder で開く(画像を見て選ぶとき)
   shot -h     このヘルプを出す
@@ -58,8 +58,11 @@ main() {
     return
   fi
 
+  # プレビューは fzf 付属のスクリプトに任せる。Ghostty では kitten icat を使い、chafa の kitty 出力のように画像が崩れないため
+  local preview=() script=$(brew --prefix 2>/dev/null)/opt/fzf/bin/fzf-preview.sh
+  [[ -x $script ]] && preview=(--preview "${(q)script} ${(q)SRC_DIR}/{}")
   # macOS のファイル名は先頭や途中に空白を含むので、名前を 1 行ずつ渡し、行単位で受け取る
-  local picked=("${(@f)$(print -rl -- ${files:t} | fzf --multi --no-sort --prompt='shot> ')}")
+  local picked=("${(@f)$(print -rl -- ${files:t} | fzf --multi --no-sort --prompt='shot> ' $preview)}")
   [[ -z ${picked[1]} ]] && return 1
   local name rc=0
   for name in $picked; do

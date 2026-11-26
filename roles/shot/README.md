@@ -5,13 +5,14 @@
 
 ## Dependencies
 - fzf
+- homebrew(kitty を入れる。fzf のプレビューで画像を出す kitten が付いてくる)
 
 
 
 ## Usage
 CLI。Claude Code からはデスクトップが読めないので、スクリーンショットを読める場所(既定はカレントの `_work`)へ mv してから見せる。
 ```
-% shot          # 新しい順に fzf で選ぶ(Tab で複数)
+% shot          # 新しい順に fzf で選ぶ(Tab で複数。右に画像のプレビュー)
 % shot last     # 一番新しい 1 枚
 % shot open     # 移す元のフォルダを Finder で開く
 % shot --help
