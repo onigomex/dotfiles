@@ -1,0 +1,69 @@
+#!/usr/bin/env zsh
+
+# スクリーンショットを作業フォルダ(既定はカレントの _work)へ mv する。
+# Claude Code からはデスクトップが読めないので、読める場所へ移してから見せるために使う。
+
+readonly SRC_DIR=${ONIGOMEX_SHOT_SRC_DIR:-$HOME/Desktop/_ScreenShot}
+readonly DEST_DIR=${ONIGOMEX_SHOT_DEST_DIR:-_work}
+
+usage() {
+cat << EOF
+Usage: shot [last | -h | --help]
+
+スクリーンショットを作業フォルダへ mv する。
+
+  shot        新しい順に fzf で並べ、選んだものを移す(Tab で複数選べる)
+  shot last   一番新しい 1 枚を移す
+  shot -h     このヘルプを出す
+
+環境変数:
+  ONIGOMEX_SHOT_SRC_DIR   移す元 (今: ${SRC_DIR})
+  ONIGOMEX_SHOT_DEST_DIR  移し先 (今: ${DEST_DIR})。相対パスはカレントから
+EOF
+}
+
+move() {
+  local f=$1 dest=${DEST_DIR}/${1:t}
+  # 同じ名前を上書きすると、前に移したスクリーンショットが黙って消えるため
+  if [[ -e $dest ]]; then
+    print -u2 "[ERROR] already exists: ${dest}"
+    return 1
+  fi
+  mv -- "$f" "$dest" && print -r -- "$dest"
+}
+
+main() {
+  case $1 in
+    -h|--help) usage; return 0 ;;
+    ''|last) ;;
+    *) usage >&2; return 1 ;;
+  esac
+
+  if [[ ! -d $SRC_DIR ]]; then
+    print -u2 "[ERROR] not a directory: ${SRC_DIR}"
+    return 1
+  fi
+  # om = 更新日時の新しい順、N = 0 件でもエラーにしない、. = 通常ファイルだけ
+  local files=(${SRC_DIR}/*(N.om))
+  if (( ${#files} == 0 )); then
+    print -u2 "[ERROR] no files in ${SRC_DIR}"
+    return 1
+  fi
+  mkdir -p -- "$DEST_DIR"
+
+  if [[ $1 == last ]]; then
+    move "${files[1]}"
+    return
+  fi
+
+  # macOS のファイル名は先頭や途中に空白を含むので、名前を 1 行ずつ渡し、行単位で受け取る
+  local picked=("${(@f)$(print -rl -- ${files:t} | fzf --multi --no-sort --prompt='shot> ')}")
+  [[ -z ${picked[1]} ]] && return 1
+  local name rc=0
+  for name in $picked; do
+    move "${SRC_DIR}/${name}" || rc=1
+  done
+  return $rc
+}
+
+main "$@"
